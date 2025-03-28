@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wear_plus/wear_plus.dart';
 
 void main() {
   runApp(const MyApp());
@@ -89,69 +90,150 @@ class _PitchCounterPageState extends State<PitchCounterPage> {
     });
     _updateStats();
   }
-
+  
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: ListView(
-        children: <Widget>[
-          ListTile(
-            leading: CircleAvatar(child: Text('$_spotHit')),
-            title: Text('Spot Hit'),
-            subtitle: Text('Pitches with successful spot hits'),
-            trailing: ElevatedButton(
-              onPressed: _incrementSpot,
-              child: Icon(Icons.add),
-            ),
-          ),
-          ListTile(
-            leading: CircleAvatar(child: Text('$_strikeCounter')),
-            title: Text('Strikes'),
-            subtitle: Text('Pitches in the strike zone'),
-            trailing: ElevatedButton(
-              onPressed: _incrementStrike,
-              child: Icon(Icons.add),
-            ),
-          ),
-          ListTile(
-            leading: CircleAvatar(child: Text('$_ballCount')),
-            title: Text('Balls'),
-            subtitle: Text('Pitches outside the strike zone'),
-            trailing: ElevatedButton(
-              onPressed: _incrementBall,
-              child: Icon(Icons.add),
-            ),
-          ),
-          ListTile(
-            leading: CircleAvatar(child: Text('$_outCount')),
-            title: Text('Outs'),
-            subtitle: Text('Number of outs'),
-            trailing: ElevatedButton(
-              onPressed: _incrementOuts,
-              child: Icon(Icons.add),
-            ),
-          ),
-          Divider(height: 0),
-          ListTile(
-            leading: CircleAvatar(child: Text('$_pitchCount')),
-            title: Text('Pitches Stats'),
-            subtitle: Text(
-              'Spots: $_spotPercentage% Strikes: $_strikePercentage% Balls: $_ballPercentage%',
-            ),
-          ),
-          Divider(height: 0),
-        ],
-      ),
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        debugPrint('Host device screen width: ${constraints.maxWidth}');
 
-      floatingActionButton: FloatingActionButton(
-        onPressed: _resetCounters,
-        tooltip: 'Reset',
-        child: const Icon(Icons.refresh),
-      ),
+        // Watch-sized device
+        if (constraints.maxWidth < 300) {
+          return WatchShape(
+            builder: (BuildContext context, WearShape shape, Widget? child) {
+              return Scaffold(
+                // appBar: AppBar(
+                //   backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                //   title: Text(widget.title),
+                // ),
+                body: MediaQuery.removePadding(
+                  context: context,
+                  removeTop: true,
+                  child: GridView.count(
+                    crossAxisCount: 2,
+
+                    // Generate 100 widgets that display their index in the list.
+                    children: <Widget>[
+                      ElevatedButton(
+                        onPressed: _incrementSpot,
+                        child: Text('Spot: $_spotHit'),
+                        style: ElevatedButton.styleFrom(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.zero, // Set borderRadius to zero
+                          ),
+                          alignment: Alignment.bottomRight,
+                          padding: EdgeInsets.fromLTRB(0, 0, 10, 5),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: _incrementStrike,
+                        child: Text('Strike: $_strikeCounter'),
+                        style: ElevatedButton.styleFrom(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.zero, // Set borderRadius to zero
+                          ),
+                          alignment: Alignment.bottomLeft,
+                          padding: EdgeInsets.fromLTRB(10, 0, 0, 5),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: _incrementBall,
+                        child: Text('Balls: $_ballCount'),
+                        style: ElevatedButton.styleFrom(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.zero, // Set borderRadius to zero
+                          ),
+                          alignment: Alignment.topRight,
+                          padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: _resetCounters,
+                        child: Text('Reset: $_pitchCount'),
+                        style: ElevatedButton.styleFrom(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.zero, // Set borderRadius to zero
+                          ),
+                          alignment: Alignment.topLeft,
+                          padding: EdgeInsets.fromLTRB(10, 5, 0, 0),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        }
+        // Phone-sized device
+        else {
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+              title: Text(widget.title),
+            ),
+            body: ListView(
+              children: <Widget>[
+                ListTile(
+                  leading: CircleAvatar(child: Text('$_spotHit')),
+                  title: Text('Spot Hit'),
+                  subtitle: Text('Pitches with successful spot hits'),
+                  trailing: ElevatedButton(
+                    onPressed: _incrementSpot,
+                    child: Icon(Icons.add),
+                  ),
+                ),
+                ListTile(
+                  leading: CircleAvatar(child: Text('$_strikeCounter')),
+                  title: Text('Strikes'),
+                  subtitle: Text('Pitches in the strike zone'),
+                  trailing: ElevatedButton(
+                    onPressed: _incrementStrike,
+                    child: Icon(Icons.add),
+                  ),
+                ),
+                ListTile(
+                  leading: CircleAvatar(child: Text('$_ballCount')),
+                  title: Text('Balls'),
+                  subtitle: Text('Pitches outside the strike zone'),
+                  trailing: ElevatedButton(
+                    onPressed: _incrementBall,
+                    child: Icon(Icons.add),
+                  ),
+                ),
+                ListTile(
+                  leading: CircleAvatar(child: Text('$_outCount')),
+                  title: Text('Outs'),
+                  subtitle: Text('Number of outs'),
+                  trailing: ElevatedButton(
+                    onPressed: _incrementOuts,
+                    child: Icon(Icons.add),
+                  ),
+                ),
+                Divider(height: 0),
+                ListTile(
+                  leading: CircleAvatar(child: Text('$_pitchCount')),
+                  title: Text('Pitches Stats'),
+                  subtitle: Text(
+                    'Spots: $_spotPercentage% Strikes: $_strikePercentage% Balls: $_ballPercentage%',
+                  ),
+                ),
+                Divider(height: 0),
+              ],
+            ),
+
+            floatingActionButton: FloatingActionButton(
+              onPressed: _resetCounters,
+              tooltip: 'Reset',
+              child: const Icon(Icons.refresh),
+            ),
+          );
+        }
+      },
     );
   }
 }
