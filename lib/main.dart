@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wear_plus/wear_plus.dart';
 
 void main() {
   runApp(const MyApp());
@@ -90,11 +91,85 @@ class _PitchCounterPageState extends State<PitchCounterPage> {
     _updateStats();
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Scaffold watchPage() {
+    return Scaffold(
+      body: WatchShape(
+          builder: (context, shape, child) {
+            return AmbientMode(
+              builder: (context, mode, child) {
+                return MediaQuery.removePadding(
+                  context: context,
+                  removeTop: true,
+                  child: GridView.count(
+                    crossAxisCount: 2,
+
+                    // Generate 100 widgets that display their index in the list.
+                    children: <Widget>[
+                      ElevatedButton(
+                        onPressed: _incrementSpot,
+                        child: Text('Spot: $_spotHit'),
+                        style: ElevatedButton.styleFrom(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius:
+                            BorderRadius.zero, // Set borderRadius to zero
+                          ),
+                          alignment: Alignment.bottomRight,
+                          padding: EdgeInsets.fromLTRB(0, 0, 10, 5),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: _incrementStrike,
+                        child: Text('Strike: $_strikeCounter'),
+                        style: ElevatedButton.styleFrom(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius:
+                            BorderRadius.zero, // Set borderRadius to zero
+                          ),
+                          alignment: Alignment.bottomLeft,
+                          padding: EdgeInsets.fromLTRB(10, 0, 0, 5),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: _incrementBall,
+                        child: Text('Balls: $_ballCount'),
+                        style: ElevatedButton.styleFrom(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius:
+                            BorderRadius.zero, // Set borderRadius to zero
+                          ),
+                          alignment: Alignment.topRight,
+                          padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: _resetCounters,
+                        child: Text('Reset: $_pitchCount'),
+                        style: ElevatedButton.styleFrom(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius:
+                            BorderRadius.zero, // Set borderRadius to zero
+                          ),
+                          alignment: Alignment.topLeft,
+                          padding: EdgeInsets.fromLTRB(10, 5, 0, 0),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          }
+      ),
+    );
+  }
+
+  Scaffold appPage() {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Theme
+            .of(context)
+            .colorScheme
+            .inversePrimary,
         title: Text(widget.title),
       ),
       body: ListView(
@@ -154,4 +229,23 @@ class _PitchCounterPageState extends State<PitchCounterPage> {
       ),
     );
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        debugPrint('Host device screen width: ${constraints.maxWidth}');
+
+        // Watch-sized device
+        if (constraints.maxWidth < 300) {
+          return watchPage();
+        }
+        // Phone-sized device
+        else {
+          return appPage();
+        }
+      },
+    );
+  }
 }
+
