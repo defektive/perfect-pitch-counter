@@ -105,7 +105,6 @@ class _PitchCounterPageState extends State<PitchCounterPage> {
                     children: <Widget>[
                       ElevatedButton(
                         onPressed: _incrementSpot,
-                        child: Text('Spot: $_spotHit'),
                         style: ElevatedButton.styleFrom(
                           shape: const RoundedRectangleBorder(
                             borderRadius:
@@ -114,10 +113,10 @@ class _PitchCounterPageState extends State<PitchCounterPage> {
                           alignment: Alignment.bottomRight,
                           padding: EdgeInsets.fromLTRB(0, 0, 10, 5),
                         ),
+                        child: Text('Spot: $_spotHit'),
                       ),
                       ElevatedButton(
                         onPressed: _incrementStrike,
-                        child: Text('Strike: $_strikeCounter'),
                         style: ElevatedButton.styleFrom(
                           shape: const RoundedRectangleBorder(
                             borderRadius:
@@ -126,10 +125,10 @@ class _PitchCounterPageState extends State<PitchCounterPage> {
                           alignment: Alignment.bottomLeft,
                           padding: EdgeInsets.fromLTRB(10, 0, 0, 5),
                         ),
+                        child: Text('Strike: $_strikeCounter'),
                       ),
                       ElevatedButton(
                         onPressed: _incrementBall,
-                        child: Text('Balls: $_ballCount'),
                         style: ElevatedButton.styleFrom(
                           shape: const RoundedRectangleBorder(
                             borderRadius:
@@ -138,10 +137,10 @@ class _PitchCounterPageState extends State<PitchCounterPage> {
                           alignment: Alignment.topRight,
                           padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
                         ),
+                        child: Text('Balls: $_ballCount'),
                       ),
                       ElevatedButton(
                         onPressed: _resetCounters,
-                        child: Text('Reset: $_pitchCount'),
                         style: ElevatedButton.styleFrom(
                           shape: const RoundedRectangleBorder(
                             borderRadius:
@@ -150,6 +149,7 @@ class _PitchCounterPageState extends State<PitchCounterPage> {
                           alignment: Alignment.topLeft,
                           padding: EdgeInsets.fromLTRB(10, 5, 0, 0),
                         ),
+                        child: Text('Reset: $_pitchCount'),
                       ),
                     ],
                   ),
