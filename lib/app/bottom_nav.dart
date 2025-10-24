@@ -1,14 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:pitch_counter/pages/pitch_counter.dart';
 
 import '../config/labels.dart';
 
-
 class BottomNavigationBarExampleApp extends StatelessWidget {
   const BottomNavigationBarExampleApp({super.key});
-
-
 
   @override
   Widget build(BuildContext context) {
