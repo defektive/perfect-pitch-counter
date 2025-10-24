@@ -9,7 +9,8 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Set Up JDK
         uses: actions/setup-java@v5
@@ -22,12 +23,10 @@ jobs:
         with:
           channel: 'stable'
 
-
       - name: Install Dependencies
         run: |
           flutter clean
           flutter pub get
-      
 
       - name: Decode Keystore
         run: |
@@ -40,7 +39,6 @@ jobs:
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
           echo "storeFile=keystore.jks" >> android/key.properties
 
-
       - name: Build Android App APK
         run: |
           flutter build apk --release
@@ -48,7 +46,7 @@ jobs:
       - name: Upload to Google Play Store
         uses: r0adkll/upload-google-play@v1
         with:
-          serviceAccountJson: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: dev.defektive.pitchin
-          releaseFile: build/app/outputs/flutter-apk/app-release.apk
+          releaseFiles: build/app/outputs/flutter-apk/app-release.apk
           track: internal
