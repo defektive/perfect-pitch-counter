@@ -41,7 +41,7 @@ jobs:
 
       - name: Build Android App APK
         run: |
-          flutter build apk --release
+          flutter  build appbundle --release
 
       - name: Upload to Google Play Store
         uses: r0adkll/upload-google-play@v1
