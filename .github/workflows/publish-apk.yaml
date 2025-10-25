@@ -48,4 +48,4 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
           packageName: dev.defektive.pitchin
-          releaseFiles: build/app/outputs/flutter-apk/app-release.apk
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
