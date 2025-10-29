@@ -50,4 +50,4 @@ jobs:
           packageName: dev.defektive.pitchin
           releaseFiles: build/app/outputs/bundle/release/app-release.aab
 #          track: internal
-          status: draft
+#          status: draft
