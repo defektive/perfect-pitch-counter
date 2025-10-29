@@ -68,16 +68,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        debugPrint('Host device screen width: ${constraints.maxWidth}');
-
-        // Watch-sized device
-        // if (constraints.maxWidth < 300) {
-        //   return watchPage();
-        // }
-        // // Phone-sized device
-        // else {
           return appPage();
-        // }
       },
     );
   }
