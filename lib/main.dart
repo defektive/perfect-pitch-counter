@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'app/bottom_nav.dart';
+import 'app/main.dart';
 
 void main() {
-  runApp(const BottomNavigationBarExampleApp());
+  runApp(const PitchCounterApp());
 }

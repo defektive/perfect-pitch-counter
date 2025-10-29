@@ -2,8 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:pitch_counter/pages/pitch_counter.dart';
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+import 'bottom_nav.dart';
+
+class PitchCounterApp extends StatelessWidget {
+  const PitchCounterApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +14,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
       ),
-      home: const PitchCounterPage(title: 'Perfect Pitch Counter'),
+      home: const BottomNav(),
     );
   }
 }

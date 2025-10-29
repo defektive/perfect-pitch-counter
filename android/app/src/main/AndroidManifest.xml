@@ -4,11 +4,6 @@
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
 
-        <meta-data
-            android:name="com.google.android.wearable.standalone"
-            android:value="true"
-            />
-
         <activity
             android:name=".MainActivity"
             android:exported="true"
