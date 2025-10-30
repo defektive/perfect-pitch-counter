@@ -1,4 +1,4 @@
-name: Deploy Flutter to Play Store
+name: Check PR
 
 on:
   pull_request:
