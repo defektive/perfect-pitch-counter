@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pitch_counter/pages/pitch_counter.dart';
+import 'package:pitch_counter/pages/pitch_game.dart';
 
 import '../config/labels.dart';
 import '../pages/settings.dart';
@@ -20,6 +21,7 @@ class _BottomNavState extends State<BottomNav> {
   );
   static const List<Widget> _widgetOptions = <Widget>[
     PitchCounterPage(title: PitchSession),
+    PitchGamePage(),
     // Text('Index 1: Business', style: optionStyle),
     SettingsPage(title: "settings"),
   ];
@@ -44,10 +46,10 @@ class _BottomNavState extends State<BottomNav> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: PitchSession),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.dashboard_customize),
-          //   label: 'Custom',
-          // ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard_customize),
+            label: 'Custom',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
         ],
         currentIndex: _selectedIndex,
