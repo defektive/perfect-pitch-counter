@@ -1,122 +1,64 @@
 import 'package:flutter/material.dart';
+import '../models/pitch_session.dart';
 
 class PitchCounterPage extends StatefulWidget {
-  const PitchCounterPage({super.key, required this.title});
+  const PitchCounterPage({super.key});
 
-  final String title;
 
   @override
   State<PitchCounterPage> createState() => _PitchCounterPageState();
 }
 
 class _PitchCounterPageState extends State<PitchCounterPage> {
-  int _outCount = 0;
-  int _ballCount = 0;
-  int _strikeCounter = 0;
-  int _spotHit = 0;
-  int _pitchCount = 0;
 
-  int _spotPercentage = 0;
-  int _strikePercentage = 0;
-  int _ballPercentage = 0;
-
-  void _updateStats() {
-    setState(() {
-      if (_pitchCount > 0) {
-        _spotPercentage = (100 * (_spotHit / _pitchCount)).round();
-        _strikePercentage = (100 * (_strikeCounter / _pitchCount)).round();
-        _ballPercentage = (100 * (_ballCount / _pitchCount)).round();
-      } else {
-        _spotPercentage = _strikePercentage = _ballPercentage = 0;
-      }
-    });
-  }
-
-  void _incrementBall() {
-    setState(() {
-      _ballCount++;
-      _pitchCount++;
-    });
-    _updateStats();
-  }
-
-  void _incrementStrike() {
-    setState(() {
-      _strikeCounter++;
-      _pitchCount++;
-    });
-    _updateStats();
-  }
-
-  void _incrementSpot() {
-    setState(() {
-      _strikeCounter++;
-      _spotHit++;
-      _pitchCount++;
-    });
-    _updateStats();
-  }
-
-  void _resetCounters() {
-    setState(() {
-      _strikeCounter = _ballCount = _pitchCount = _outCount = _spotHit = 0;
-    });
-    _updateStats();
-  }
-
-  void _incrementOuts() {
-    setState(() {
-      _outCount++;
-    });
-    _updateStats();
-  }
+  final pitchSession = PitchSession();
 
   Scaffold appPage() {
     return Scaffold(
       body: ListView(
         children: <Widget>[
           ListTile(
-            leading: CircleAvatar(child: Text('$_spotHit')),
+            leading: CircleAvatar(child: Text('${pitchSession.spotHit}')),
             title: Text('Spot Hit'),
             subtitle: Text('Pitches with successful spot hits'),
             trailing: ElevatedButton(
-              onPressed: _incrementSpot,
+              onPressed: pitchSession.incrementSpot,
               child: Icon(Icons.add),
             ),
           ),
           ListTile(
-            leading: CircleAvatar(child: Text('$_strikeCounter')),
+            leading: CircleAvatar(child: Text('${pitchSession.strikeCount}')),
             title: Text('Strikes'),
             subtitle: Text('Pitches in the strike zone'),
             trailing: ElevatedButton(
-              onPressed: _incrementStrike,
+              onPressed: pitchSession.incrementStrike,
               child: Icon(Icons.add),
             ),
           ),
           ListTile(
-            leading: CircleAvatar(child: Text('$_ballCount')),
+            leading: CircleAvatar(child: Text('${pitchSession.ballCount}')),
             title: Text('Balls'),
             subtitle: Text('Pitches outside the strike zone'),
             trailing: ElevatedButton(
-              onPressed: _incrementBall,
+              onPressed: pitchSession.incrementBall,
               child: Icon(Icons.add),
             ),
           ),
           ListTile(
-            leading: CircleAvatar(child: Text('$_outCount')),
+            leading: CircleAvatar(child: Text('${pitchSession.outCount}')),
             title: Text('Outs'),
             subtitle: Text('Number of outs'),
             trailing: ElevatedButton(
-              onPressed: _incrementOuts,
+              onPressed: pitchSession.incrementOuts,
               child: Icon(Icons.add),
             ),
           ),
           Divider(height: 0),
           ListTile(
-            leading: CircleAvatar(child: Text('$_pitchCount')),
+            leading: CircleAvatar(child: Text('${pitchSession.pitchCount}')),
             title: Text('Pitches Stats'),
             subtitle: Text(
-              'Spots: $_spotPercentage% Strikes: $_strikePercentage% Balls: $_ballPercentage%',
+              'Spots: ${pitchSession.spotPercentage}% Strikes: ${pitchSession.strikePercentage}% Balls: ${pitchSession.ballPercentage}%',
             ),
           ),
           Divider(height: 0),
@@ -124,7 +66,7 @@ class _PitchCounterPageState extends State<PitchCounterPage> {
       ),
 
       floatingActionButton: FloatingActionButton(
-        onPressed: _resetCounters,
+        onPressed: pitchSession.resetCounters,
         tooltip: 'Reset',
         child: const Icon(Icons.refresh),
       ),
@@ -133,15 +75,9 @@ class _PitchCounterPageState extends State<PitchCounterPage> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (BuildContext context, BoxConstraints constraints) {
-
-        // Watch-sized device
-        // if (constraints.maxWidth < 300) {
-        //   return watchPage();
-        // }
-        // // Phone-sized device
-        // else {
+    return  ListenableBuilder(
+      listenable: pitchSession,
+      builder: (context, child) {
           return appPage();
         // }
       },

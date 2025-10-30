@@ -20,7 +20,7 @@ class _BottomNavState extends State<BottomNav> {
     fontWeight: FontWeight.bold,
   );
   static const List<Widget> _widgetOptions = <Widget>[
-    PitchCounterPage(title: PitchSession),
+    PitchCounterPage(),
     PitchGamePage(),
     // Text('Index 1: Business', style: optionStyle),
     SettingsPage(title: "settings"),

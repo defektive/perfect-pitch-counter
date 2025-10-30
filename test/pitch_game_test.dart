@@ -6,7 +6,7 @@ import 'package:pitch_counter/models/pitch_game.dart';
 import 'package:pitch_counter/main.dart';
 
 void main() {
-  test('Strike counter increments', () {
+  test('Strike counter increments pitches and batters', () {
 
     final pitchGame = PitchGame();
 
