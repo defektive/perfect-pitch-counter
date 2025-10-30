@@ -41,7 +41,7 @@ jobs:
 
       - name: Build Android App APK
         run: |
-          flutter  build appbundle --release
+          flutter  build appbundle --release --build-name=${{github.ref_name}} --build-number=${{github.run_number}}
 
       - name: Upload to Google Play Store
         uses: r0adkll/upload-google-play@v1
