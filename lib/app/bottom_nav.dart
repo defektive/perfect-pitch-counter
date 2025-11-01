@@ -47,8 +47,8 @@ class _BottomNavState extends State<BottomNav> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: PitchSession),
           BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard_customize),
-            label: 'Custom',
+            icon: Icon(Icons.sports_baseball),
+            label: 'Game Mode',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
         ],

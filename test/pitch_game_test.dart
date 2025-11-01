@@ -12,7 +12,7 @@ void main() {
 
     pitchGame.incrementStrike();
 
-    expect(pitchGame.batterCount, 1);
+    expect(pitchGame.batterCount, 0);
     expect(pitchGame.currentStrikes, 1);
     expect(pitchGame.totalStrikes, 1);
 
@@ -21,7 +21,7 @@ void main() {
 
     expect(pitchGame.totalStrikes, 3);
     expect(pitchGame.outCount, 1);
-    expect(pitchGame.batterCount, 2);
+    expect(pitchGame.batterCount, 1);
 
   });
 }
