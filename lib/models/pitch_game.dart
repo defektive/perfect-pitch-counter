@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 import 'package:flutter/foundation.dart';
 
@@ -5,7 +6,6 @@ class PitchGame extends ChangeNotifier {
   int _outCount = 0;
   int _hitsCount = 0;
   int _walkCount = 0;
-  int _batterCount = 1;
   
   int _totalBallCount = 0;
   int _totalStrikeCount = 0;
@@ -16,7 +16,10 @@ class PitchGame extends ChangeNotifier {
   int _strikePercentage = 0;
   int _ballPercentage = 0;
 
-  int get batterCount => _batterCount;
+  DateTime? gameStarted;
+  Duration? lastTime;
+
+  int get batterCount => _outCount + _hitsCount + _walkCount;
   int get outCount => _outCount;
   int get walkCount => _walkCount;
   int get hitsCount => _hitsCount;
@@ -35,7 +38,45 @@ class PitchGame extends ChangeNotifier {
   int get strikePercentage => _strikePercentage;
   int get ballPercentage => _ballPercentage;
 
+  PitchGame() {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (gameStarted != null) {
+        notifyListeners();
+      }
+    });
+  }
 
+  void toggleTimer() {
+    if (gameStarted == null) {
+      gameStarted = DateTime.now();
+    } else {
+      lastTime = getDuration();
+      gameStarted = null;
+    }
+    notifyListeners();
+  }
+
+  bool isTimerRunning() {
+    return gameStarted != null;
+  }
+
+
+
+  Duration getDuration() {
+    if (isTimerRunning()) {
+      return DateTime.now().toUtc().difference(gameStarted!.toUtc());
+    }
+
+    if (lastTime != null) {
+      return lastTime!;
+    }
+
+    return Duration();
+  }
+
+  String getFormattedDuration() {
+    return getDuration().toString().split('.').first.padLeft(8, "0");
+  }
 
   void _updateStats() {
     if (totalPitches > 0) {
@@ -63,7 +104,6 @@ class PitchGame extends ChangeNotifier {
 
     if (_currentBallCount == 4) {
       _walkCount++;
-      _batterCount++;
       _currentBallCount = _currentStrikeCount = 0;
     }
 
@@ -76,7 +116,6 @@ class PitchGame extends ChangeNotifier {
 
     if (_currentStrikeCount == 3) {
       _outCount++;
-      _batterCount++;
       _currentBallCount = _currentStrikeCount = 0;
     }
 
@@ -87,7 +126,6 @@ class PitchGame extends ChangeNotifier {
     _outCount = 0;
     _hitsCount = 0;
     _walkCount = 0;
-    _batterCount = 1;
     _totalBallCount = 0;
     _totalStrikeCount = 0;
     _currentBallCount = 0;
