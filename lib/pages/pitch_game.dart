@@ -45,6 +45,7 @@ class _PitchGamePageState extends State<PitchGamePage> {
               ],
             ),
           ),
+          Divider(height: 0),
           ListTile(
             title: Text('Hits'),
             subtitle: Text('Number of hits'),
@@ -53,6 +54,7 @@ class _PitchGamePageState extends State<PitchGamePage> {
               child: Text('${pitchGame.hitsCount}'),
             ),
           ),
+          Divider(height: 0),
           ListTile(
             title: Text('Strikes'),
             subtitle: Text('Pitches inside the strike zone'),
@@ -61,6 +63,7 @@ class _PitchGamePageState extends State<PitchGamePage> {
                   child: Text('${pitchGame.currentStrikes}'),
                 ),
           ),
+          Divider(height: 0),
           ListTile(
             title: Text('Balls'),
             subtitle: Text('Pitches out side the strike zone'),
@@ -69,26 +72,49 @@ class _PitchGamePageState extends State<PitchGamePage> {
               child: Text('${pitchGame.currentBalls}'),
             ),
           ),
+          Divider(height: 0),
           ListTile(
             trailing: CircleAvatar(child: Text('${pitchGame.batterCount}')),
             title: Text('Batters'),
             subtitle: Text('Number of batters'),
           ),
+          Divider(height: 0),
           ListTile(
             trailing: CircleAvatar(child: Text('${pitchGame.outCount}')),
             title: Text('Outs'),
             subtitle: Text('Number of outs'),
           ),
+          Divider(height: 0),
           ListTile(
             trailing: CircleAvatar(child: Text('${pitchGame.walkCount}')),
             title: Text('Walks'),
             subtitle: Text('Number of walks'),
           ),
+          Divider(height: 0),
           ListTile(
             trailing: CircleAvatar(child: Text('${pitchGame.runCount}')),
             title: Text('Runs'),
             subtitle: Text('Number of runs'),
           ),
+          Divider(height: 0),
+          ListTile(
+            trailing: CircleAvatar(child: Text('${pitchGame.totalStrikes}')),
+            title: Text('Strikes'),
+            subtitle: Text('Number of strikes'),
+          ),
+          Divider(height: 0),
+          ListTile(
+            trailing: CircleAvatar(child: Text('${pitchGame.totalBalls}')),
+            title: Text('Balls'),
+            subtitle: Text('Number of balls'),
+          ),
+          Divider(height: 0),
+          ListTile(
+            trailing: CircleAvatar(child: Text('${pitchGame.totalPitches}')),
+            title: Text('Pitches'),
+            subtitle: Text('Number of pitches'),
+          ),
+          Divider(height: 0),
         ],
       ),
 
