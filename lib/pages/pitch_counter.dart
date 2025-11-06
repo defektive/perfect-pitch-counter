@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pitch_counter/models/pitch_game.dart';
 import '../models/pitch_session.dart';
 
 class PitchCounterPage extends StatefulWidget {
@@ -11,54 +12,42 @@ class PitchCounterPage extends StatefulWidget {
 
 class _PitchCounterPageState extends State<PitchCounterPage> {
 
-  final pitchSession = PitchSession();
+  PitchGame pitchGame = PitchGame();
+
+
+  // final pitchSession = PitchSession();
 
   Scaffold appPage() {
     return Scaffold(
       body: ListView(
         children: <Widget>[
+
           ListTile(
-            leading: CircleAvatar(child: Text('${pitchSession.spotHit}')),
-            title: Text('Spot Hit'),
-            subtitle: Text('Pitches with successful spot hits'),
-            trailing: ElevatedButton(
-              onPressed: pitchSession.incrementSpot,
-              child: Icon(Icons.add),
-            ),
-          ),
-          ListTile(
-            leading: CircleAvatar(child: Text('${pitchSession.strikeCount}')),
             title: Text('Strikes'),
             subtitle: Text('Pitches in the strike zone'),
             trailing: ElevatedButton(
-              onPressed: pitchSession.incrementStrike,
-              child: Icon(Icons.add),
+              onPressed: pitchGame.incrementStrike,
+              child:  Text('${pitchGame.totalStrikes}'),
             ),
           ),
           ListTile(
-            leading: CircleAvatar(child: Text('${pitchSession.ballCount}')),
             title: Text('Balls'),
             subtitle: Text('Pitches outside the strike zone'),
             trailing: ElevatedButton(
-              onPressed: pitchSession.incrementBall,
-              child: Icon(Icons.add),
+              onPressed: pitchGame.incrementBall,
+              child: Text('${pitchGame.totalBalls}'),
             ),
           ),
           ListTile(
-            leading: CircleAvatar(child: Text('${pitchSession.outCount}')),
             title: Text('Outs'),
             subtitle: Text('Number of outs'),
-            trailing: ElevatedButton(
-              onPressed: pitchSession.incrementOuts,
-              child: Icon(Icons.add),
-            ),
+            trailing: CircleAvatar(child: Text('${pitchGame.outCount}')),
           ),
           Divider(height: 0),
           ListTile(
-            leading: CircleAvatar(child: Text('${pitchSession.pitchCount}')),
-            title: Text('Pitches Stats'),
+            title: Text('Pitch Stats'),
             subtitle: Text(
-              'Spots: ${pitchSession.spotPercentage}% Strikes: ${pitchSession.strikePercentage}% Balls: ${pitchSession.ballPercentage}%',
+              'Strikes: ${pitchGame.strikePercentage}% Balls: ${pitchGame.ballPercentage}%',
             ),
           ),
           Divider(height: 0),
@@ -66,7 +55,7 @@ class _PitchCounterPageState extends State<PitchCounterPage> {
       ),
 
       floatingActionButton: FloatingActionButton(
-        onPressed: pitchSession.resetCounters,
+        onPressed: pitchGame.resetCounters,
         tooltip: 'Reset',
         child: const Icon(Icons.refresh),
       ),
@@ -76,7 +65,7 @@ class _PitchCounterPageState extends State<PitchCounterPage> {
   @override
   Widget build(BuildContext context) {
     return  ListenableBuilder(
-      listenable: pitchSession,
+      listenable: pitchGame,
       builder: (context, child) {
           return appPage();
         // }

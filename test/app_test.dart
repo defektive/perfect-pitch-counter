@@ -17,7 +17,7 @@ void main() {
     await tester.pumpWidget(const PitchCounterApp());
 
     // Verify that our counter starts at 0.
-    expect(find.text('Pitch Session'), findsOneWidget);
+    expect(find.text('Counter Mode'), findsOneWidget);
     expect(find.text('Settings'), findsOneWidget);
     expect(find.text('Pizza'), findsNothing);
 

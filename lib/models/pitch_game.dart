@@ -3,6 +3,22 @@ import 'dart:collection';
 import 'package:flutter/foundation.dart';
 
 class PitchGame extends ChangeNotifier {
+
+  static final PitchGame _instance = PitchGame._internal();
+
+  factory PitchGame() {
+    return _instance;
+  }
+
+  PitchGame._internal() {
+  // PitchGame() {
+
+  }
+
+
+  Timer? _interval;
+
+
   int _outCount = 0;
   int _hitsCount = 0;
   int _walkCount = 0;
@@ -38,20 +54,20 @@ class PitchGame extends ChangeNotifier {
   int get strikePercentage => _strikePercentage;
   int get ballPercentage => _ballPercentage;
 
-  PitchGame() {
-    Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (gameStarted != null) {
-        notifyListeners();
-      }
-    });
-  }
+
 
   void toggleTimer() {
     if (gameStarted == null) {
       gameStarted = DateTime.now();
+      _interval = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (gameStarted != null) {
+          notifyListeners();
+        }
+      });
     } else {
       lastTime = getDuration();
       gameStarted = null;
+      _interval?.cancel();
     }
     notifyListeners();
   }
