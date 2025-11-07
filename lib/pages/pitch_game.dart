@@ -115,13 +115,24 @@ class _PitchGamePageState extends State<PitchGamePage> {
             subtitle: Text('Number of pitches'),
           ),
           Divider(height: 0),
+          ListTile(
+            title: Text('Reset'),
+            subtitle: Text('Reset stats'),
+            trailing: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red, // Background color for the danger button
+                foregroundColor: Colors.white, // Text color for the danger button
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8), // Rounded corners
+                ),
+              ),
+              onPressed: pitchGame.resetCounters,
+              child: const Icon(Icons.refresh),
+            ),
+          ),
+          Divider(height: 0),
         ],
-      ),
-
-      floatingActionButton: FloatingActionButton(
-        onPressed: pitchGame.resetCounters,
-        tooltip: 'Reset',
-        child: const Icon(Icons.refresh),
       ),
     );
   }
