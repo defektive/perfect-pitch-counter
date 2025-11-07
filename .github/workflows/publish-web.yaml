@@ -19,7 +19,7 @@ jobs:
           channel: 'stable'
 
       - name: Build Flutter Web
-        run: flutter build web --release --web-renderer html --base-href /perfect-pitch-counter/ # Adjust base-href for project sites
+        run: flutter build web --release --base-href /perfect-pitch-counter/ # Adjust base-href for project sites
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
