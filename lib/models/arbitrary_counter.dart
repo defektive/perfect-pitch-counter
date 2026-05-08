@@ -34,6 +34,21 @@ class ArbitraryCounter extends ChangeNotifier {
     _lastUsed = DateTime.now();
     notifyListeners();
   }
+
+  set count(int value) {
+    _count = value;
+    notifyListeners();
+  }
+
+  set totalIncrements(int value) {
+    _totalIncrements = value;
+    notifyListeners();
+  }
+
+  set lastUsed(DateTime? value) {
+    _lastUsed = value;
+    notifyListeners();
+  }
 }
 
 int _nextId = 1;
