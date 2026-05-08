@@ -85,6 +85,7 @@ class PitchGame extends ChangeNotifier {
     _hitsCount++;
     _currentBallCount = _currentStrikeCount = 0;
     _updateStats();
+    notifyListeners();
   }
 
   void incrementBall() {
@@ -97,6 +98,7 @@ class PitchGame extends ChangeNotifier {
     }
 
     _updateStats();
+    notifyListeners();
   }
 
   void incrementStrike() {
@@ -109,6 +111,7 @@ class PitchGame extends ChangeNotifier {
     }
 
     _updateStats();
+    notifyListeners();
   }
 
   void resetCounters() {
@@ -123,6 +126,7 @@ class PitchGame extends ChangeNotifier {
     _ballPercentage = 0;
     gameStarted = null;
     _updateStats();
+    notifyListeners();
   }
 
   /// Export game data as JSON string
