@@ -8,6 +8,16 @@ class CounterManager extends ChangeNotifier {
   int get totalCount => _counters.fold(0, (sum, c) => sum + c.count);
 
   void addCounter(String name) {
+    if (name.isEmpty) {
+      throw ArgumentError('Counter name cannot be empty');
+    }
+    if (name.length > 50) {
+      throw ArgumentError('Counter name cannot exceed 50 characters');
+    }
+    if (_counters.any((c) => c.name.toLowerCase() == name.toLowerCase())) {
+      throw ArgumentError('Counter with name "$name" already exists');
+    }
+
     final counter = ArbitraryCounter(name);
     _counters.add(counter);
     notifyListeners();

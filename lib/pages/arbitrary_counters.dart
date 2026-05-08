@@ -32,20 +32,74 @@ class _ArbitraryCountersPageState extends State<ArbitraryCountersPage> {
         ),
         body: Consumer<CounterManager>(
           builder: (context, manager, child) {
-            return manager.counters.isEmpty
-                ? const Center(
-                    child: Text(
-                      'No counters added. Tap + to add one.',
-                      style: TextStyle(color: Colors.grey),
+            final counters = manager.counters;
+            final topCounter = counters.isNotEmpty
+                ? counters.reduce((a, b) =>
+                    a.totalIncrements > b.totalIncrements ? a : b)
+                : null;
+
+            return SafeArea(
+              child: Column(
+                children: [
+                  if (topCounter != null)
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(16),
+                          bottomRight: Radius.circular(16),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.trending_up, size: 28),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Most Used Counter',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  topCounter.name,
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.all(8),
-                    itemBuilder: (context, index) {
-                      return _buildCounterTile(manager.counters[index]);
-                    },
-                    itemCount: manager.counters.length,
-                  );
+                  Expanded(
+                    child: counters.isEmpty
+                        ? const Center(
+                            child: Text(
+                              'No counters yet. Tap + to add one.',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          )
+                        : ListView.builder(
+                            padding: const EdgeInsets.all(8),
+                            itemBuilder: (context, index) {
+                              return _buildCounterTile(counters[index]);
+                            },
+                            itemCount: counters.length,
+                          ),
+                  ),
+                ],
+              ),
+            );
           },
         ),
         floatingActionButton: FloatingActionButton.extended(
@@ -72,16 +126,23 @@ class _ArbitraryCountersPageState extends State<ArbitraryCountersPage> {
         width: 50,
         height: 50,
         decoration: BoxDecoration(
-          color: Colors.grey[800],
+          color: counter.hasBeenUsed ? Colors.blue : Colors.grey[800],
           borderRadius: BorderRadius.circular(25),
         ),
         child: Center(
           child: Text(
             counter.count.toString(),
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+            style: counter.hasBeenUsed
+                ? const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  )
+                : const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey,
+                  ),
           ),
         ),
       ),
@@ -150,9 +211,18 @@ class _ArbitraryCountersPageState extends State<ArbitraryCountersPage> {
 
   void _addCounter() {
     if (_formKey.currentState!.validate()) {
-      _counterManager.addCounter(_nameController.text.trim());
-      _nameController.clear();
-      Navigator.pop(context);
+      try {
+        _counterManager.addCounter(_nameController.text.trim());
+        _nameController.clear();
+        Navigator.pop(context);
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Error: ${e.toString()}. Counter name must be unique and under 50 characters.'),
+          ),
+        );
+      }
     }
   }
 
