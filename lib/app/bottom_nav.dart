@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pitch_counter/models/pitch_game.dart';
-import 'package:pitch_counter/pages/pitch_counter.dart';
 import 'package:pitch_counter/pages/pitch_game.dart';
+import 'package:pitch_counter/pages/pitch_counter.dart';
+import 'package:pitch_counter/pages/arbitrary_counters.dart';
 
 import '../config/labels.dart';
 import '../pages/settings.dart';
@@ -17,14 +18,10 @@ class BottomNav extends StatefulWidget {
 class _BottomNavState extends State<BottomNav> {
   int _selectedIndex = 0;
   PitchGame _pitchGame = PitchGame();
-  static const TextStyle optionStyle = TextStyle(
-    fontSize: 30,
-    fontWeight: FontWeight.bold,
-  );
   static const List<Widget> _widgetOptions = <Widget>[
     PitchGamePage(),
     PitchCounterPage(),
-    // Text('Index 1: Business', style: optionStyle),
+    ArbitraryCountersPage(),
     SettingsPage(title: "settings"),
   ];
 
@@ -52,10 +49,14 @@ class _BottomNavState extends State<BottomNav> {
             label: 'Game Mode',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Counter Mode'),
+          BottomNavigationBarItem(icon: Icon(Icons.list_alt), label: 'Counters'),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber[800],
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        type: BottomNavigationBarType.fixed,
+        unselectedItemColor: Theme.of(context).hintColor,
         onTap: _onItemTapped,
       ),
     );

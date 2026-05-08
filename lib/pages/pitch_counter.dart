@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pitch_counter/models/pitch_game.dart';
-import '../models/pitch_session.dart';
 
 class PitchCounterPage extends StatefulWidget {
   const PitchCounterPage({super.key});
