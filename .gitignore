@@ -47,3 +47,39 @@ act.env
 
 # FVM Version Cache
 .fvm/
+
+# Flutter/Dart generated
+*.snap
+*.pb.txt
+*.dart.dart_tool/
+.dart_tool/
+
+# Test coverage
+coverage/
+.lcov
+
+# Android Studio/Gradle
+.gradle/
+local.properties
+
+# Web
+.web-build/
+*.chromium
+*.firefox
+*.safari
+*.edge
+
+# macOS
+.DS_Store
+
+# Environment files (secrets)
+.env
+.env.local
+.env.*.local
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
