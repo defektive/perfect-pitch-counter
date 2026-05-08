@@ -99,6 +99,8 @@ lib/
 - ✅ CodeQL security scanning
 - ✅ CI linting with flutter analyze
 - ✅ Widget tests for counter model
+- ✅ Fixed redundant ListenableBuilder
+- ✅ Removed misleading debug message
 - ⏳ Game state persistence (optional)
 
 ## License

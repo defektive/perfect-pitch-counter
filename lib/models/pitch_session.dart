@@ -14,7 +14,6 @@ class PitchSession extends ChangeNotifier {
 
 
   int get outCount => _outCount;
-  /// The current total price of all items (assuming all items cost $42).
   int get ballCount => _ballCount;
   int get strikeCount => _strikeCount;
   int get spotHit => _spotHit;
@@ -24,8 +23,6 @@ class PitchSession extends ChangeNotifier {
   int get spotPercentage => _spotPercentage;
   int get strikePercentage => _strikePercentage;
   int get ballPercentage => _ballPercentage;
-
-
 
   void _updateStats() {
     if (_pitchCount > 0) {

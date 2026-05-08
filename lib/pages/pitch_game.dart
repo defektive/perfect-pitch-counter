@@ -19,7 +19,8 @@ class _PitchGamePageState extends State<PitchGamePage> {
   }
 
   Scaffold appPage() {
-    debugPrint('Host device screen width: ${pitchGame.currentStrikes}');
+    final screenWidth = MediaQuery.of(context).size.width;
+    debugPrint('Host device screen width: $screenWidth');
 
     return Scaffold(
       body: ListView(
@@ -145,11 +146,6 @@ class _PitchGamePageState extends State<PitchGamePage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: pitchGame,
-      builder: (context, child) {
-        return appPage();
-      },
-    );
+    return appPage();
   }
 }
