@@ -41,12 +41,19 @@ android {
         versionName = flutter.versionName
     }
 
+    val releaseKeyAlias = keystoreProperties.getProperty("keyAlias", "")
+    val releaseKeyPassword = keystoreProperties.getProperty("keyPassword", "")
+    val releaseStoreFile = keystoreProperties.getProperty("storeFile")
+    val releaseStorePassword = keystoreProperties.getProperty("storePassword", "")
+
     signingConfigs {
         create("release") {
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["keyPassword"] as String
-            storeFile = keystoreProperties["storeFile"]?.let { file(it) }
-            storePassword = keystoreProperties["storePassword"] as String
+            if (releaseStoreFile?.isNotBlank() == true) {
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+                storeFile = file(releaseStoreFile)
+                storePassword = releaseStorePassword
+            }
         }
     }
 
@@ -54,7 +61,11 @@ android {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
         debug {
             // TODO: Add your own signing config for the release build.
