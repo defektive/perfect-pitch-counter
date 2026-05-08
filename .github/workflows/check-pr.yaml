@@ -40,4 +40,4 @@ jobs:
 
       - name: Build APK
         run: |
-          flutter build apk --debug
+          flutter build apk
