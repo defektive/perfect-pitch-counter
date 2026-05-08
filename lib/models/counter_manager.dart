@@ -4,6 +4,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 class CounterManager extends ChangeNotifier {
+  CounterManager._privateConstructor();
+
+  static CounterManager? _instance;
+
+  factory CounterManager() {
+    _instance ??= CounterManager._privateConstructor();
+    return _instance!;
+  }
+
   final List<ArbitraryCounter> _counters = [];
 
   List<ArbitraryCounter> get counters => List.unmodifiable(_counters);

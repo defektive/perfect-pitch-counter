@@ -11,9 +11,18 @@ class ArbitraryCountersPage extends StatefulWidget {
 }
 
 class _ArbitraryCountersPageState extends State<ArbitraryCountersPage> {
-  final _counterManager = CounterManager();
+  late final CounterManager _counterManager;
   final _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _counterManager = CounterManager();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _counterManager.loadCounters();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -10,7 +10,13 @@ class PitchGamePage extends StatefulWidget {
 }
 
 class _PitchGamePageState extends State<PitchGamePage> {
-  PitchGame pitchGame = PitchGame();
+  late final PitchGame pitchGame;
+
+  @override
+  void initState() {
+    super.initState();
+    pitchGame = PitchGame();
+  }
 
   Scaffold appPage() {
     debugPrint('Host device screen width: ${pitchGame.currentStrikes}');
