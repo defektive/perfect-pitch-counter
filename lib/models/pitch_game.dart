@@ -4,6 +4,15 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 class PitchGame extends ChangeNotifier {
+  PitchGame._privateConstructor();
+
+  static PitchGame? _instance;
+
+  factory PitchGame() {
+    _instance ??= PitchGame._privateConstructor();
+    return _instance!;
+  }
+
   Timer? _interval;
 
   int _outCount = 0;

@@ -11,49 +11,54 @@ class PitchCounterPage extends StatefulWidget {
 }
 
 class _PitchCounterPageState extends State<PitchCounterPage> {
-  final PitchGame _pitchGame = PitchGame();
+  late final PitchGame _pitchGame = PitchGame();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListView(
-        children: <Widget>[
-          ListTile(
-            title: const Text('Strikes'),
-            subtitle: const Text('Pitches in the strike zone'),
-            trailing: ElevatedButton(
-              onPressed: _pitchGame.incrementStrike,
-              child: Text('${_pitchGame.totalStrikes}'),
-            ),
+    return ListenableBuilder(
+      listenable: _pitchGame,
+      builder: (context, child) {
+        return Scaffold(
+          body: ListView(
+            children: <Widget>[
+              ListTile(
+                title: const Text('Strikes'),
+                subtitle: const Text('Pitches in the strike zone'),
+                trailing: ElevatedButton(
+                  onPressed: _pitchGame.incrementStrike,
+                  child: Text('${_pitchGame.totalStrikes}'),
+                ),
+              ),
+              ListTile(
+                title: const Text('Balls'),
+                subtitle: const Text('Pitches outside the strike zone'),
+                trailing: ElevatedButton(
+                  onPressed: _pitchGame.incrementBall,
+                  child: Text('${_pitchGame.totalBalls}'),
+                ),
+              ),
+              ListTile(
+                title: const Text('Outs'),
+                subtitle: const Text('Number of outs'),
+                trailing: CircleAvatar(child: Text('${_pitchGame.outCount}')),
+              ),
+              const Divider(height: 0),
+              ListTile(
+                title: const Text('Pitch Stats'),
+                subtitle: Text(
+                  'Strikes: ${_pitchGame.strikePercentage}% Balls: ${_pitchGame.ballPercentage}%',
+                ),
+              ),
+              const Divider(height: 0),
+            ],
           ),
-          ListTile(
-            title: const Text('Balls'),
-            subtitle: const Text('Pitches outside the strike zone'),
-            trailing: ElevatedButton(
-              onPressed: _pitchGame.incrementBall,
-              child: Text('${_pitchGame.totalBalls}'),
-            ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: _showExportDialog,
+            tooltip: 'Export',
+            child: const Icon(Icons.download),
           ),
-          ListTile(
-            title: const Text('Outs'),
-            subtitle: const Text('Number of outs'),
-            trailing: CircleAvatar(child: Text('${_pitchGame.outCount}')),
-          ),
-          const Divider(height: 0),
-          ListTile(
-            title: const Text('Pitch Stats'),
-            subtitle: Text(
-              'Strikes: ${_pitchGame.strikePercentage}% Balls: ${_pitchGame.ballPercentage}%',
-            ),
-          ),
-          const Divider(height: 0),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showExportDialog,
-        tooltip: 'Export',
-        child: const Icon(Icons.download),
-      ),
+        );
+      },
     );
   }
 
@@ -115,4 +120,3 @@ class _PitchCounterPageState extends State<PitchCounterPage> {
     );
   }
 }
-
