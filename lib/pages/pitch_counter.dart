@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pitch_counter/models/pitch_game.dart';
-import '../models/pitch_session.dart';
 
 class PitchCounterPage extends StatefulWidget {
   const PitchCounterPage({super.key});
@@ -11,65 +11,107 @@ class PitchCounterPage extends StatefulWidget {
 }
 
 class _PitchCounterPageState extends State<PitchCounterPage> {
+  final PitchGame _pitchGame = PitchGame();
 
-  PitchGame pitchGame = PitchGame();
-
-
-  // final pitchSession = PitchSession();
-
-  Scaffold appPage() {
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: ListView(
         children: <Widget>[
-
           ListTile(
-            title: Text('Strikes'),
-            subtitle: Text('Pitches in the strike zone'),
+            title: const Text('Strikes'),
+            subtitle: const Text('Pitches in the strike zone'),
             trailing: ElevatedButton(
-              onPressed: pitchGame.incrementStrike,
-              child:  Text('${pitchGame.totalStrikes}'),
+              onPressed: _pitchGame.incrementStrike,
+              child: Text('${_pitchGame.totalStrikes}'),
             ),
           ),
           ListTile(
-            title: Text('Balls'),
-            subtitle: Text('Pitches outside the strike zone'),
+            title: const Text('Balls'),
+            subtitle: const Text('Pitches outside the strike zone'),
             trailing: ElevatedButton(
-              onPressed: pitchGame.incrementBall,
-              child: Text('${pitchGame.totalBalls}'),
+              onPressed: _pitchGame.incrementBall,
+              child: Text('${_pitchGame.totalBalls}'),
             ),
           ),
           ListTile(
-            title: Text('Outs'),
-            subtitle: Text('Number of outs'),
-            trailing: CircleAvatar(child: Text('${pitchGame.outCount}')),
+            title: const Text('Outs'),
+            subtitle: const Text('Number of outs'),
+            trailing: CircleAvatar(child: Text('${_pitchGame.outCount}')),
           ),
-          Divider(height: 0),
+          const Divider(height: 0),
           ListTile(
-            title: Text('Pitch Stats'),
+            title: const Text('Pitch Stats'),
             subtitle: Text(
-              'Strikes: ${pitchGame.strikePercentage}% Balls: ${pitchGame.ballPercentage}%',
+              'Strikes: ${_pitchGame.strikePercentage}% Balls: ${_pitchGame.ballPercentage}%',
             ),
           ),
-          Divider(height: 0),
+          const Divider(height: 0),
         ],
       ),
-
       floatingActionButton: FloatingActionButton(
-        onPressed: pitchGame.resetCounters,
-        tooltip: 'Reset',
-        child: const Icon(Icons.refresh),
+        onPressed: _showExportDialog,
+        tooltip: 'Export',
+        child: const Icon(Icons.download),
       ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return  ListenableBuilder(
-      listenable: pitchGame,
-      builder: (context, child) {
-          return appPage();
-        // }
-      },
+  void _showExportDialog() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Export Data'),
+            const SizedBox(height: 8),
+            ListTile(
+              leading: const Icon(Icons.insert_drive_file),
+              title: const Text('JSON'),
+              onTap: () {
+                final json = _pitchGame.exportToJson();
+                _copyToClipboard(json);
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.table_chart),
+              title: const Text('CSV'),
+              onTap: () {
+                final csv = _pitchGame.exportToCsv();
+                _copyToClipboard(csv);
+                Navigator.pop(context);
+              },
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: () {
+                final json = _pitchGame.exportToJson();
+                final csv = _pitchGame.exportToCsv();
+                final text = '\n\n--- JSON ---\n$json\n\n--- CSV ---\n$csv';
+                _copyToClipboard(text);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Data copied to clipboard!')),
+                );
+                Navigator.pop(context);
+              },
+              child: const Text('Copy All'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _copyToClipboard(String text) {
+    Clipboard.setData(ClipboardData(text: text));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Copied to clipboard!'),
+        duration: Duration(seconds: 2),
+      ),
     );
   }
 }

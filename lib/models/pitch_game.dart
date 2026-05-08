@@ -1,31 +1,18 @@
 import 'dart:async';
-import 'dart:collection';
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 
 class PitchGame extends ChangeNotifier {
-
-  static final PitchGame _instance = PitchGame._internal();
-
-  factory PitchGame() {
-    return _instance;
-  }
-
-  PitchGame._internal() {
-  // PitchGame() {
-
-  }
-
-
   Timer? _interval;
-
 
   int _outCount = 0;
   int _hitsCount = 0;
   int _walkCount = 0;
-  
+
   int _totalBallCount = 0;
   int _totalStrikeCount = 0;
-  
+
   int _currentBallCount = 0;
   int _currentStrikeCount = 0;
 
@@ -50,11 +37,8 @@ class PitchGame extends ChangeNotifier {
   int get currentBalls => _currentBallCount;
   int get currentStrikes => _currentStrikeCount;
 
-  // Stats
   int get strikePercentage => _strikePercentage;
   int get ballPercentage => _ballPercentage;
-
-
 
   void toggleTimer() {
     if (gameStarted == null) {
@@ -72,21 +56,15 @@ class PitchGame extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool isTimerRunning() {
-    return gameStarted != null;
-  }
-
-
+  bool isTimerRunning() => gameStarted != null;
 
   Duration getDuration() {
     if (isTimerRunning()) {
       return DateTime.now().toUtc().difference(gameStarted!.toUtc());
     }
-
     if (lastTime != null) {
       return lastTime!;
     }
-
     return Duration();
   }
 
@@ -101,18 +79,14 @@ class PitchGame extends ChangeNotifier {
     } else {
       _strikePercentage = _ballPercentage = 0;
     }
-
-    notifyListeners();
   }
 
   void incrementHit() {
     _hitsCount++;
-
     _currentBallCount = _currentStrikeCount = 0;
-
     _updateStats();
+    notifyListeners();
   }
-
 
   void incrementBall() {
     _totalBallCount++;
@@ -124,6 +98,7 @@ class PitchGame extends ChangeNotifier {
     }
 
     _updateStats();
+    notifyListeners();
   }
 
   void incrementStrike() {
@@ -136,6 +111,7 @@ class PitchGame extends ChangeNotifier {
     }
 
     _updateStats();
+    notifyListeners();
   }
 
   void resetCounters() {
@@ -148,7 +124,37 @@ class PitchGame extends ChangeNotifier {
     _currentStrikeCount = 0;
     _strikePercentage = 0;
     _ballPercentage = 0;
-
+    gameStarted = null;
     _updateStats();
+    notifyListeners();
+  }
+
+  /// Export game data as JSON string
+  String exportToJson() {
+    return jsonEncode({
+      'timestamp': gameStarted?.toIso8601String() ?? DateTime.now().toIso8601String(),
+      'ballCount': _totalBallCount,
+      'strikeCount': _totalStrikeCount,
+      'hitCount': _hitsCount,
+      'walkCount': _walkCount,
+      'outCount': _outCount,
+      'pitchCount': totalPitches,
+      'strikePercentage': _strikePercentage,
+      'ballPercentage': _ballPercentage,
+    });
+  }
+
+  /// Export game data as CSV string
+  String exportToCsv() {
+    return 'Timestamp,Ball Count,Strike Count,Hit Count,Walk Count,Out Count,Pitch Count,Strike %,Ball %\n'
+        '${gameStarted ?? DateTime.now()},'
+        '$_totalBallCount,'
+        '$_totalStrikeCount,'
+        '$_hitsCount,'
+        '$_walkCount,'
+        '$_outCount,'
+        '$totalPitches,'
+        '$_strikePercentage,'
+        '$_ballPercentage';
   }
 }
