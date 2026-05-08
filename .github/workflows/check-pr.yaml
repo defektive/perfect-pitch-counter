@@ -14,11 +14,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-#      - name: Set Up JDK
-#        uses: actions/setup-java@v5
-#        with:
-#          java-version: 17
-#          distribution: oracle
+     - name: Set Up JDK
+       uses: actions/setup-java@v5
+       with:
+         java-version: 17
+         distribution: oracle
 
       - name: Set Up Flutter
         uses: subosito/flutter-action@v2
@@ -33,3 +33,11 @@ jobs:
       - name: Run Tests
         run: |
           flutter test
+
+      - name: Analyze Lints
+        run: |
+          flutter analyze
+
+      - name: Build APK
+        run: |
+          flutter build apk --release
