@@ -11,15 +11,9 @@ class ArbitraryCountersPage extends StatefulWidget {
 }
 
 class _ArbitraryCountersPageState extends State<ArbitraryCountersPage> {
-  CounterManager _counterManager = CounterManager();
+  final _counterManager = CounterManager();
   final _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
-  @override
-  void initState() {
-    super.initState();
-    _counterManager.loadCountersSync();
-  }
 
   @override
   Widget build(BuildContext context) {
