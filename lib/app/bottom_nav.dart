@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pitch_counter/models/pitch_game.dart';
 import 'package:pitch_counter/pages/pitch_game.dart';
 import 'package:pitch_counter/pages/pitch_counter.dart';
 import 'package:pitch_counter/pages/arbitrary_counters.dart';
@@ -17,7 +16,6 @@ class BottomNav extends StatefulWidget {
 
 class _BottomNavState extends State<BottomNav> {
   int _selectedIndex = 0;
-  PitchGame _pitchGame = PitchGame();
   static const List<Widget> _widgetOptions = <Widget>[
     PitchGamePage(),
     PitchCounterPage(),
@@ -39,7 +37,7 @@ class _BottomNavState extends State<BottomNav> {
               .of(context)
               .colorScheme
               .inversePrimary,
-          title: const Text(AppTitle)
+          title: Text(appTitle)
       ),
       body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
       bottomNavigationBar: BottomNavigationBar(

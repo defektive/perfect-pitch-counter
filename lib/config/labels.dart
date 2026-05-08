@@ -1,3 +1,3 @@
 
-const AppTitle = 'Perfect Pitch Counter';
-const PitchSession = 'Pitch Session';
+const appTitle = 'Perfect Pitch Counter';
+const pitchSession = 'Pitch Session';

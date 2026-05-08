@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key, required this.title});
@@ -36,41 +33,36 @@ class _SettingsPageState extends State<SettingsPage> {
     });
   }
 
-  Scaffold appPage() {
+  Widget _appPage() {
     return Scaffold(
+      appBar: AppBar(title: Text(widget.title)),
       body: ListView(
         children: <Widget>[
           ListTile(
-            leading: Icon(Icons.text_fields),
-            title: Text('Application'),
+            leading: const Icon(Icons.text_fields),
+            title: const Text('Application'),
             trailing: Text(_packageInfo.appName),
           ),
-          Divider(height: 0),
+          const Divider(height: 0),
           ListTile(
-            leading: Icon(Icons.info),
-            title: Text('Version'),
+            leading: const Icon(Icons.info),
+            title: const Text('Version'),
             trailing: Text(_packageInfo.version),
           ),
-          Divider(height: 0),
+          const Divider(height: 0),
           ListTile(
-            leading:  Icon(Icons.handyman),
-            title: Text('Build Number'),
-              trailing: Text(_packageInfo.buildNumber)
+            leading: const Icon(Icons.settings),
+            title: const Text('Build Number'),
+            trailing: Text(_packageInfo.buildNumber),
           ),
-          Divider(height: 0),
+          const Divider(height: 0),
         ],
       ),
-
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (BuildContext context, BoxConstraints constraints) {
-          return appPage();
-      },
-    );
+    return _appPage();
   }
 }
-
