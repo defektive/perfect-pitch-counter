@@ -6,7 +6,7 @@ import { CounterDisplay } from '@/components/ui/counter-display';
 import { Typography, Spacing, Colors } from '@/constants/theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CARD_WIDTH = Math.max(SCREEN_WIDTH - 48, 280);
+const CARD_WIDTH = Math.max(SCREEN_WIDTH - 40, 260);
 const CARD_MARGIN = (SCREEN_WIDTH - CARD_WIDTH) / 2;
 
 export default function ScoreScreen() {
@@ -24,46 +24,124 @@ export default function ScoreScreen() {
       : 0;
 
   const backgroundColor = mode === 'dark' ? Colors.dark.primary : Colors.light.card;
-  const statBackgroundColor = mode === 'dark' ? Colors.dark.primary : Colors.light.primary;
+  const cardColor = mode === 'dark' ? Colors.dark.primary : Colors.light.primary;
+  const dividerColor = mode === 'dark' ? Colors.dark.divider : Colors.light.divider;
+  const cardAccent = mode === 'dark' ? Colors.dark.accent : Colors.light.accent;
   const textColor = mode === 'dark' ? Colors.dark.text : Colors.light.text;
 
   return (
     <View style={{ flex: 1, backgroundColor }}>
-      <ScrollView style={{ padding: Spacing.xl }}>
-        {/* Strike Percentage */}
-        <View style={{ backgroundColor: statBackgroundColor, borderRadius: 16, padding: Spacing.lg, marginBottom: Spacing.lg, alignItems: 'center', width: CARD_WIDTH, marginLeft: CARD_MARGIN }}>
-          <Text style={{ fontSize: Typography.subtitle.fontSize, color: textColor.tertiary, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: Spacing.md }}>Strike %</Text>
-          <Text style={{ fontSize: Typography.large.fontSize, fontWeight: 'bold', color: textColor.primary }}>{strikePercentage}%</Text>
+      <ScrollView style={{ flex: 1, paddingHorizontal: 4 }}>
+        {/* Header */}
+        <View style={{ alignItems: 'center', paddingTop: 24, paddingBottom: 16 }}>
+          <Text style={{ fontSize: 24, fontWeight: 'bold', color: textColor.primary }}>Score Sheet</Text>
+          <Text style={{ fontSize: 13, color: textColor.secondary, marginTop: 4 }}>
+            Track game statistics
+          </Text>
         </View>
 
-        {/* Ball Count */}
-        <View style={{ backgroundColor: statBackgroundColor, borderRadius: 16, padding: Spacing.lg, marginBottom: Spacing.lg, alignItems: 'center', width: CARD_WIDTH, marginLeft: CARD_MARGIN }}>
-          <Text style={{ fontSize: Typography.subtitle.fontSize, color: textColor.tertiary, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: Spacing.md }}>Balls</Text>
-          <CounterDisplay count={balls} subtitle="Total" />
+        {/* Strike Percentage - Hero Card */}
+        <View
+          style={{
+            backgroundColor: cardAccent.primaryLight,
+            borderRadius: 16,
+            padding: 16,
+            marginBottom: 16,
+            alignItems: 'center',
+            width: CARD_WIDTH,
+            marginLeft: CARD_MARGIN,
+            minHeight: 120,
+          }}>
+          <Text style={{ fontSize: 12, color: cardAccent.text.secondary, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>
+            Strike Percentage
+          </Text>
+          <Text style={{ fontSize: 48, fontWeight: 'bold', color: cardAccent.primary }}>
+            {strikePercentage}%
+          </Text>
         </View>
 
-        {/* Strike Count */}
-        <View style={{ backgroundColor: statBackgroundColor, borderRadius: 16, padding: Spacing.lg, marginBottom: Spacing.lg, alignItems: 'center', width: CARD_WIDTH, marginLeft: CARD_MARGIN }}>
-          <Text style={{ fontSize: Typography.subtitle.fontSize, color: textColor.tertiary, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: Spacing.md }}>Strikes</Text>
-          <CounterDisplay count={strikes} subtitle="Total" />
+        {/* Stats Cards */}
+        <View style={{ width: CARD_WIDTH, marginLeft: CARD_MARGIN }}>
+          <View
+            style={{
+              backgroundColor: cardColor,
+              borderRadius: 16,
+              padding: 16,
+              marginBottom: 12,
+              alignItems: 'center',
+              minHeight: 110,
+            }}>
+            <Text style={{ fontSize: 12, color: textColor.secondary, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>
+              Balls
+            </Text>
+            <CounterDisplay count={balls} subtitle="Total" />
+          </View>
+
+          <View
+            style={{
+              backgroundColor: cardColor,
+              borderRadius: 16,
+              padding: 16,
+              marginBottom: 12,
+              alignItems: 'center',
+              minHeight: 110,
+            }}>
+            <Text style={{ fontSize: 12, color: textColor.secondary, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>
+              Strikes
+            </Text>
+            <CounterDisplay count={strikes} subtitle="Total" />
+          </View>
+
+          <View
+            style={{
+              backgroundColor: cardColor,
+              borderRadius: 16,
+              padding: 16,
+              marginBottom: 12,
+              alignItems: 'center',
+              minHeight: 110,
+            }}>
+            <Text style={{ fontSize: 12, color: textColor.secondary, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>
+              Hits
+            </Text>
+            <CounterDisplay count={hits} />
+          </View>
+
+          <View
+            style={{
+              backgroundColor: cardColor,
+              borderRadius: 16,
+              padding: 16,
+              marginBottom: 12,
+              alignItems: 'center',
+              minHeight: 110,
+            }}>
+            <Text style={{ fontSize: 12, color: textColor.secondary, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>
+              Walks
+            </Text>
+            <CounterDisplay count={walks} />
+          </View>
+
+          <View
+            style={{
+              backgroundColor: cardColor,
+              borderRadius: 16,
+              padding: 16,
+              alignItems: 'center',
+              minHeight: 110,
+            }}>
+            <Text style={{ fontSize: 12, color: textColor.secondary, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>
+              Outs
+            </Text>
+            <CounterDisplay count={outs} />
+          </View>
         </View>
 
-        {/* Hits */}
-        <View style={{ backgroundColor: statBackgroundColor, borderRadius: 16, padding: Spacing.lg, marginBottom: Spacing.lg, alignItems: 'center', width: CARD_WIDTH, marginLeft: CARD_MARGIN }}>
-          <Text style={{ fontSize: Typography.subtitle.fontSize, color: textColor.tertiary, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: Spacing.md }}>Hits</Text>
-          <CounterDisplay count={hits} />
-        </View>
-
-        {/* Walks */}
-        <View style={{ backgroundColor: statBackgroundColor, borderRadius: 16, padding: Spacing.lg, marginBottom: Spacing.lg, alignItems: 'center', width: CARD_WIDTH, marginLeft: CARD_MARGIN }}>
-          <Text style={{ fontSize: Typography.subtitle.fontSize, color: textColor.tertiary, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: Spacing.md }}>Walks</Text>
-          <CounterDisplay count={walks} />
-        </View>
-
-        {/* Outs */}
-        <View style={{ backgroundColor: statBackgroundColor, borderRadius: 16, padding: Spacing.lg, marginBottom: Spacing.lg, alignItems: 'center', width: CARD_WIDTH, marginLeft: CARD_MARGIN }}>
-          <Text style={{ fontSize: Typography.subtitle.fontSize, color: textColor.tertiary, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: Spacing.md }}>Outs</Text>
-          <CounterDisplay count={outs} />
+        {/* Footer */}
+        <View style={{ alignItems: 'center', paddingBottom: 24 }}>
+          <Text style={{ fontSize: 11, color: textColor.muted, textAlign: 'center' }}>
+            Tap a counter to increment
+          </Text>
         </View>
       </ScrollView>
     </View>

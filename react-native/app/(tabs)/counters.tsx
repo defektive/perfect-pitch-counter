@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, Alert, Modal, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, Alert, Modal, KeyboardAvoidingView, ScrollView, Platform, StyleSheet } from 'react-native';
 import { useColorScheme } from 'react-native';
 import { useCounterManager } from '@/hooks/use-counter-manager';
 import { CounterDisplay } from '@/components/ui/counter-display';
@@ -59,111 +59,240 @@ export default function CountersScreen() {
   };
 
   const backgroundColor = mode === 'dark' ? Colors.dark.primary : Colors.light.card;
-  const dividerColor = mode === 'dark' ? Colors.dark.divider : Colors.light.divider;
+  const cardColor = mode === 'dark' ? Colors.dark.primary : Colors.light.primary;
   const darkAccent = mode === 'dark' ? Colors.dark : Colors.light;
   const textColor = mode === 'dark' ? Colors.dark.text : Colors.light.text;
+  const accentColor = mode === 'dark' ? Colors.dark.accent : Colors.light.accent;
+
+  const actionButtonStyle = StyleSheet.flatten({
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
+    backgroundColor: cardColor,
+    borderWidth: 2,
+    borderColor: dividerColor,
+  });
 
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor }}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      {/* Header */}
+      <View style={{ alignItems: 'center', paddingTop: 24, paddingBottom: 16, paddingHorizontal: 4 }}>
+        <Text style={{ fontSize: 24, fontWeight: 'bold', color: textColor.primary }}>My Counters</Text>
+        <Text style={{ fontSize: 13, color: textColor.secondary, marginTop: 4 }}>
+          Create and track custom counters
+        </Text>
+      </View>
+
       {/* Most Used Counter */}
       {topCounter && (
-        <View style={{ flexDirection: 'row', alignItems: 'center', padding: Spacing.md, paddingHorizontal: Spacing.xl, backgroundColor: darkAccent.accent.primaryLight }}>
-          <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: darkAccent.accent.primary, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={{ fontSize: 20 }}>📈</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: accentColor.primaryLight,
+            padding: 16,
+            paddingHorizontal: 20,
+            borderRadius: 16,
+            marginBottom: 12,
+          }}>
+          <View
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: 24,
+              backgroundColor: accentColor.primary,
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginRight: 16,
+            }}>
+            <Text style={{ fontSize: 24 }}>📈</Text>
           </View>
-          <View style={{ flex: 1, marginLeft: Spacing.md }}>
-            <Text style={{ fontSize: Typography.subtitle.fontSize, color: darkAccent.text.secondary, textTransform: 'uppercase', marginBottom: Spacing.xs }}>Most Used Counter</Text>
-            <Text style={{ fontSize: Typography.h3.fontSize, fontWeight: Typography.h3.fontWeight, color: darkAccent.accent.primary, marginBottom: Spacing.xs }}>{topCounter.name}</Text>
-            <Text style={{ fontSize: Typography.caption.fontSize, color: darkAccent.text.secondary }}>{topCounter.totalIncrements} uses</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 12, color: darkAccent.text.secondary, textTransform: 'uppercase', marginBottom: 6 }}>
+              Most Used
+            </Text>
+            <Text style={{ fontSize: 18, fontWeight: '700', color: accentColor.primary, marginBottom: 4 }}>
+              {topCounter.name}
+            </Text>
+            <Text style={{ fontSize: 11, color: darkAccent.text.secondary }}>
+              {topCounter.totalIncrements} uses
+            </Text>
           </View>
         </View>
       )}
 
       {/* Empty state */}
       {counters.length === 0 && (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: Spacing.lg }}>
-          <Text style={{ color: textColor.secondary, fontSize: 16, textAlign: 'center' }}>No counters yet. Tap + to add one.</Text>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }}>
+          <View style={{ alignItems: 'center', marginBottom: 16 }}>
+            <Text style={{ fontSize: 48, marginBottom: 8 }}>📊</Text>
+            <Text style={{ color: textColor.secondary, fontSize: 16, textAlign: 'center' }}>
+              No counters yet. Tap + to add one.
+            </Text>
+          </View>
         </View>
       )}
 
       {/* Counter List */}
       <ScrollView style={{ flex: 1 }}>
         {counters.map((counter) => (
-          <TouchableOpacity
+          <View
             key={counter.id}
-            style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.xl, paddingVertical: Spacing.md, backgroundColor }}>
-            <View style={{ flex: 2 }}>
-              <Text style={{ fontSize: 18, fontWeight: '600', color: textColor.primary }}>{counter.name}</Text>
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: cardColor,
+              paddingVertical: 14,
+              paddingHorizontal: 16,
+              borderRadius: 14,
+              marginBottom: 10,
+            }}>
+            <View style={{ flex: 3 }}>
+              <Text style={{ fontSize: 17, fontWeight: '600', color: textColor.primary }}>{counter.name}</Text>
             </View>
 
-            <View style={{ flex: 3, alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ flex: 2, alignItems: 'center', justifyContent: 'center' }}>
               <CounterDisplay
                 count={counter.count || 0}
                 title={counter.hasBeenUsed ? counter.name.toUpperCase() : ''}
               />
             </View>
 
-            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
               <TouchableOpacity
-                style={{ width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginRight: Spacing.xs, backgroundColor: mode === 'dark' ? Colors.dark.primary : Colors.light.primary, borderWidth: 1, borderColor: dividerColor }}
+                style={{ ...actionButtonStyle, opacity: (counter.count || 0) === 0 ? 0.4 : 1 }}
                 onPress={() => handleDecrement(counter.id)}
-                disabled={(counter.count || 0) === 0}>
+                disabled={(counter.count || 0) === 0}
+                accessibilityLabel={`Decrease ${counter.name} counter`}
+              >
                 <Text style={{ fontSize: 20, color: textColor.primary }}>−</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={{ width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginRight: Spacing.xs, backgroundColor: mode === 'dark' ? Colors.dark.primary : Colors.light.primary, borderWidth: 1, borderColor: dividerColor }}>
-                <Text style={{ fontSize: 20, color: textColor.primary }}>+</Text>
+                style={{ ...actionButtonStyle, backgroundColor: accentColor.primaryLight, borderColor: dividerColor }}
+                onPress={() => handleIncrement(counter.id)}
+                accessibilityLabel={`Increase ${counter.name} counter`}
+              >
+                <Text style={{ fontSize: 22, color: textColor.primary }}>+</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={{ width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginRight: 0, backgroundColor: 'transparent', borderWidth: 0 }}>
-                <Text style={{ fontSize: 20, color: textColor.primary }}>🔄</Text>
+                style={{ ...actionButtonStyle, width: 40, height: 40, backgroundColor: 'transparent', borderWidth: 0 }}
+                onPress={() => handleResetCounter(counter.id)}
+                accessibilityLabel={`Reset ${counter.name} counter`}
+              >
+                <Text style={{ fontSize: 20, color: textColor.primary }}>↻</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={{ width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginRight: 0 }}>
-                <Text style={{ fontSize: 20, color: textColor.primary }}>🗑️</Text>
+                style={{ ...actionButtonStyle, width: 40, height: 40, backgroundColor: 'transparent', borderWidth: 0, marginRight: 0 }}
+                onPress={() => handleDeleteCounter(counter.id)}
+                accessibilityLabel={`Delete ${counter.name} counter`}
+              >
+                <Text style={{ fontSize: 20, color: textColor.error }}>🗑️</Text>
               </TouchableOpacity>
             </View>
-          </TouchableOpacity>
+          </View>
         ))}
       </ScrollView>
 
       {/* Add Counter FAB */}
       <TouchableOpacity
-        style={{ position: 'absolute', bottom: 32, right: 32, width: 56, height: 56, borderRadius: 28, backgroundColor: Colors.accent.primary, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 4, elevation: 8 }}>
-        <Text style={{ fontSize: 28, color: textColor.primary }}>+</Text>
+        style={{
+          position: 'absolute',
+          bottom: 28,
+          right: 28,
+          width: 60,
+          height: 60,
+          borderRadius: 30,
+          backgroundColor: accentColor.primary,
+          justifyContent: 'center',
+          alignItems: 'center',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.3,
+          shadowRadius: 4,
+          elevation: 8,
+        }}
+        onPress={() => setShowAddModal(true)}
+        accessibilityLabel="Add new counter"
+        accessibilityRole="button"
+      >
+        <Text style={{ fontSize: 32, color: textColor.primary }}>+</Text>
       </TouchableOpacity>
 
-      {/* Add Modal */}
+      {/* Add Counter Modal */}
       <Modal
         visible={showAddModal}
         transparent
-        animationType="fade">
+        animationType="slide"
+        onRequestClose={() => setShowAddModal(false)}>
         <View style={{ flex: 1, backgroundColor }}>
-          <View style={{ backgroundColor, borderRadius: 16, padding: Spacing.lg, width: '90%', maxWidth: 360, alignItems: 'center' }}>
-            <Text style={{ fontSize: 20, fontWeight: Typography.h3.fontWeight, color: textColor.primary, marginBottom: Spacing.md, textAlign: 'center' }}>Add New Counter</Text>
+          <View
+            style={{
+              backgroundColor,
+              borderRadius: 20,
+              padding: 20,
+              width: '90%',
+              maxWidth: 360,
+              alignItems: 'center',
+            }}>
+            <Text style={{ fontSize: 20, fontWeight: '700', color: textColor.primary, marginBottom: 12, textAlign: 'center' }}>
+              Add New Counter
+            </Text>
+
             <TextInput
-              style={{ backgroundColor: mode === 'dark' ? Colors.dark.secondary : Colors.light.secondary, color: textColor.primary, borderRadius: 8, padding: Spacing.md, fontSize: 16, borderWidth: 1, borderColor: dividerColor, width: '100%', textAlign: 'center', minHeight: 44, flex: 1 }}
+              style={{
+                backgroundColor: darkAccent.secondary,
+                color: textColor.primary,
+                borderRadius: 12,
+                padding: 12,
+                fontSize: 16,
+                borderWidth: 2,
+                borderColor: dividerColor,
+                width: '100%',
+                textAlign: 'center',
+                minHeight: 48,
+              }}
               placeholder="e.g., Jumps, Sprints"
               placeholderTextColor={textColor.muted}
               value={counterName}
               onChangeText={setCounterName}
               maxLength={50}
               autoFocus
+              accessibilityLabel="Enter counter name"
+              autoCapitalize="words"
+              autoComplete="name"
             />
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: Spacing.md, width: '100%' }}>
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 16, width: '100%' }}>
               <TouchableOpacity
-                style={{ flex: 1, paddingVertical: Spacing.sm, borderRadius: 8, alignItems: 'center', height: 44, marginHorizontal: 2, backgroundColor: mode === 'dark' ? Colors.dark.secondary : Colors.light.secondary, borderWidth: 1, borderColor: dividerColor }}>
+                style={{
+                  flex: 1,
+                  paddingVertical: 12,
+                  borderRadius: 12,
+                  alignItems: 'center',
+                  height: 48,
+                  marginHorizontal: 4,
+                  backgroundColor: darkAccent.secondary,
+                  borderWidth: 2,
+                  borderColor: dividerColor,
+                }}
+                onPress={() => setShowAddModal(false)}
+                accessibilityLabel="Cancel adding counter"
+              >
                 <Text style={{ color: textColor.primary, fontSize: 16, fontWeight: '600' }}>Cancel</Text>
               </TouchableOpacity>
               <Button
                 title="Add"
                 onPress={handleAddCounter}
-                style={{ flex: 1, height: 44 }}
+                style={{ flex: 1, height: 48 }}
+                accessibilityLabel="Add counter"
               />
             </View>
           </View>
