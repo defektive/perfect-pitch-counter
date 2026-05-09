@@ -1,29 +1,36 @@
-name: Deploy Flutter Web to GitHub Pages
+name: Deploy React Native Web to GitHub Pages
 
 on:
   push:
     branches:
-      - main # Or your main development branch
+      - main
 
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          channel: 'stable'
+          node-version: 20
 
-      - name: Build Flutter Web
-        run: flutter build web --release --base-href /perfect-pitch-counter/ # Adjust base-href for project sites
+      - name: Install dependencies
+        run: |
+          cd react-native
+          npm ci
+
+      - name: Build Web
+        run: |
+          cd react-native
+          npx expo export --platform web
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4.0.0
+        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build/web
-          publish_branch: gh-pages # Uncomment if deploying to a dedicated gh-pages branch
+          publish_dir: ./react-native/dist
+          publish_branch: gh-pages

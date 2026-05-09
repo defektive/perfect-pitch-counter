@@ -1,7 +1,5 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ViewStyle } from 'react-native';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Colors } from '@/constants/theme';
 
 interface ButtonProps {
   title: string;
@@ -20,42 +18,28 @@ export function Button({
   style,
   disabled = false,
 }: ButtonProps) {
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
-
   const getBgColor = () => {
     switch (variant) {
       case 'primary':
-        return '#2196f3';
+        return '#1976d2';
       case 'secondary':
         return '#444';
       case 'ghost':
         return 'transparent';
       default:
-        return colors.primary;
+        return '#1976d2';
     }
   };
 
-  const getTextColor = () => {
-    switch (variant) {
-      case 'primary':
-        return '#fff';
-      case 'secondary':
-        return colors.primary;
-      case 'ghost':
-        return colors.primary;
-      default:
-        return '#fff';
-    }
-  };
+  const getTextColor = () => '#fff';
 
   return (
     <TouchableOpacity
-      style={[styles.button, style, disabled && styles.disabled, getBgColor()]}
+      style={[styles.button, disabled && styles.disabled, style]}
       onPress={onPress}
       disabled={disabled}
     >
-      <Text style={[styles.text, disabled && styles.disabledText, getTextColor()]}>{title}</Text>
+      <Text style={[styles.text, disabled && styles.disabledText]}>{title}</Text>
     </TouchableOpacity>
   );
 }

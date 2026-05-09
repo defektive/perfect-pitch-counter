@@ -3,8 +3,12 @@ import React from 'react';
 import { Platform } from 'react-native';
 
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Colors } from '@/constants/theme';
 
 export default function TabLayout() {
+  const colorScheme = useColorScheme() ?? 'light';
+  const colors = Colors[colorScheme];
 
   return (
     <Tabs
@@ -17,9 +21,7 @@ export default function TabLayout() {
           height: Platform.OS === 'ios' ? 89 : 65,
           paddingBottom: Platform.OS === 'ios' ? 29 : 12,
         },
-        tabBarItemStyle: {
-          width: screenWidth / 4,
-        },
+        tabBarItemStyle: {},
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: '600',
@@ -46,7 +48,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <IconSymbol
               size={focused ? 30 : 24}
-              name="list"
+              name="list.bullet"
               color={color}
             />
           ),

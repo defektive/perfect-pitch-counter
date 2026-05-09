@@ -47,7 +47,7 @@ export default function CountersScreen() {
   const handleDecrement = (id: string) => {
     const state = useCounterManager.getState();
     const counter = state.counters.find((c) => c.id === id);
-    if (counter?.count > 0) {
+    if ((counter?.count || 0) > 0) {
       useCounterManager.getState().decrementCounter(id);
     }
   };
@@ -88,7 +88,7 @@ export default function CountersScreen() {
 
             <View style={styles.counterValue}>
               <CounterDisplay
-                count={counter.count}
+                count={(counter.count || 0)}
                 title={counter.hasBeenUsed ? counter.name.toUpperCase() : ''}
                 showBorder={false}
               />
@@ -96,9 +96,9 @@ export default function CountersScreen() {
 
             <View style={styles.counterActions}>
               <TouchableOpacity
-                style={[styles.actionBtn, counter.count === 0 && styles.disabledBtn]}
+                style={[styles.actionBtn, (counter.count || 0) === 0 && styles.disabledBtn]}
                 onPress={() => handleDecrement(counter.id)}
-                disabled={counter.count === 0}>
+                disabled={(counter.count || 0) === 0}>
                 <Text style={styles.actionIcon}>−</Text>
               </TouchableOpacity>
 

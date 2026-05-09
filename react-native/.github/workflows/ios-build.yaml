@@ -25,11 +25,6 @@ jobs:
         with:
           node-version: 20
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3'
-
       - name: Install Expo CLI
         run: npm install -g eas-cli
 
@@ -38,26 +33,18 @@ jobs:
         with:
           xcode-version: 'latest'
 
-      - name: Setup Ruby Bundler
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-        env:
-          BUNDLE_WITH: 'development'
-          BUNDLE_PATH: 'vendor/bundle'
-
       - name: Install CocoaPods dependencies
         run: |
           cd react-native
-          pod install --repo-update --verbose
+          pod install --repo-update
 
       - name: Build iOS
         run: |
           cd react-native
-          npx expo export:ios --output app/build/
+          npx expo export:ios --output dist/
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
           name: pitch-counter-ipa-${{ github.ref_name }}
-          path: react-native/app/build/
+          path: react-native/dist/

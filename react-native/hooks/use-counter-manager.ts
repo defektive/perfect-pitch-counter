@@ -19,14 +19,12 @@ interface CounterManagerState {
   removeCounter: (id: string) => Promise<void>;
   resetAll: () => Promise<void>;
   loadCounters: () => Promise<void>;
-  totalCount: number;
 }
 
 const STORAGE_KEY = '@counters';
 
 export const useCounterManager = create<CounterManagerState>((set, get) => ({
   counters: [],
-  totalCount: 0,
 
   async loadCounters() {
     try {
@@ -50,7 +48,7 @@ export const useCounterManager = create<CounterManagerState>((set, get) => ({
   async addCounter(name: string) {
     if (!name) throw new Error('Counter name cannot be empty');
     if (name.length > 50) throw new Error('Counter name cannot exceed 50 characters');
-    if (get().counters.some((c) => c.name.toLowerCase() === name.toLowerCase())) {
+    if (get().counters && get().counters.some((c) => c.name.toLowerCase() === name.toLowerCase())) {
       throw new Error(`Counter with name "${name}" already exists`);
     }
 
@@ -86,7 +84,6 @@ export const useCounterManager = create<CounterManagerState>((set, get) => ({
 
       return {
         counters: state.counters.map((c) => (c.id === id ? updatedCounter : c)),
-        totalCount: state.totalCount + 1,
       };
     });
   },
@@ -104,7 +101,6 @@ export const useCounterManager = create<CounterManagerState>((set, get) => ({
         };
         return {
           counters: state.counters.map((c) => (c.id === id ? updatedCounter : c)),
-          totalCount: Math.max(0, state.totalCount - 1),
         };
       }
       return state;
@@ -116,7 +112,6 @@ export const useCounterManager = create<CounterManagerState>((set, get) => ({
       counters: state.counters.map((c) =>
         c.id === id ? { ...c, count: 0, hasBeenUsed: false } : c
       ),
-      totalCount: Math.max(0, state.totalCount - c.count),
     }));
   },
 
@@ -124,17 +119,12 @@ export const useCounterManager = create<CounterManagerState>((set, get) => ({
     await _saveCounters();
     set((state) => ({
       counters: state.counters.filter((c) => c.id !== id),
-      totalCount: state.totalCount - (state.counters.find((c) => c.id === id)?.count || 0),
     }));
   },
 
   async resetAll() {
     await _saveCounters();
-    set({ counters: [], totalCount: 0 });
-  },
-
-  get totalCount() {
-    return this.counters.reduce((sum, c) => sum + c.count, 0);
+    set({ counters: [] });
   },
 }));
 

@@ -5,7 +5,24 @@ import { SymbolWeight, SymbolViewProps } from 'expo-symbols';
 import { ComponentProps } from 'react';
 import { OpaqueColorValue, type StyleProp, type TextStyle } from 'react-native';
 
-type IconMapping = Record<SymbolViewProps['name'], ComponentProps<typeof MaterialIcons>['name']>;
+type MaterialIconName =
+  | 'home'
+  | 'send'
+  | 'code'
+  | 'chevron-right'
+  | 'sports-tennis'
+  | 'format-list-bulleted'
+  | 'settings'
+  | 'check'
+  | 'radio-button-unchecked'
+  | 'star'
+  | 'delete'
+  | 'keyboard-arrow-up'
+  | 'keyboard-arrow-down'
+  | 'lightbulb'
+  | 'lightbulb-outline'
+  | 'schedule';
+
 type IconSymbolName = keyof typeof MAPPING;
 
 /**
@@ -13,13 +30,14 @@ type IconSymbolName = keyof typeof MAPPING;
  * - see Material Icons in the [Icons Directory](https://icons.expo.fyi).
  * - see SF Symbols in the [SF Symbols](https://developer.apple.com/sf-symbols/) app.
  */
-const MAPPING = {
+const MAPPING: Record<string, MaterialIconName> = {
   'house.fill': 'home',
   'paperplane.fill': 'send',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
   'baseball': 'sports-tennis',
   'list': 'format-list-bulleted',
+  'list.bullet': 'format-list-bulleted',
   'gear': 'settings',
   'checkmark': 'check',
   'circle': 'radio-button-unchecked',
@@ -30,7 +48,7 @@ const MAPPING = {
   'bolt': 'lightbulb',
   'clock': 'schedule',
   'bolt.stroke': 'lightbulb-outline',
-} as IconMapping;
+};
 
 /**
  * An icon component that uses native SF Symbols on iOS, and Material Icons on Android and web.

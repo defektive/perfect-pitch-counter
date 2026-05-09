@@ -43,23 +43,15 @@ jobs:
           cd react-native
           npm ci
 
-      - name: Cache Expo dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            react-native/node_modules
-            react-native/app/build
-          key: ${{ runner.os }}-expo-${{ hashFiles('react-native/package-lock.json') }}
-
       - name: Build Android
         run: |
           cd react-native
 
-          # Build APK
+          # Build APK to dist/apk
           if [ "${{ github.event.inputs.buildType }}" = "apk" ] || [ "${{ github.ref_name }}" = "v*" ]; then
-            npx expo export:android --output app/build/apk
+            npx expo export:android --output dist/apk
           else
-            npx expo export:android --output app/build/appbundle
+            npx expo export:android --output dist/appbundle
           fi
 
       - name: Upload APK
@@ -67,14 +59,14 @@ jobs:
         if: github.event.inputs.buildType == 'apk' || github.ref_name == 'v*'
         with:
           name: pitch-counter-apk-${{ github.ref_name }}
-          path: react-native/app/build/apk/
+          path: react-native/dist/apk/
 
       - name: Upload App Bundle
         uses: actions/upload-artifact@v4
         if: github.event.inputs.buildType == 'appbundle'
         with:
           name: pitch-counter-appbundle-${{ github.ref_name }}
-          path: react-native/app/build/appbundle/
+          path: react-native/dist/appbundle/
 
       - name: Sign and Upload to Play Store
         if: github.event.inputs.buildType == 'appbundle' || github.ref_name == 'v*'
@@ -82,5 +74,5 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
           packageName: dev.defektive.pitch
-          releaseFiles: app/build/appbundle/*
+          releaseFiles: dist/appbundle/*
           track: internal

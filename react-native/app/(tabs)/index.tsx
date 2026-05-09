@@ -20,6 +20,8 @@ export default function PitchCounterScreen() {
     console.log('Export CSV:', exportToCsv());
   }, [exportToJson, exportToCsv]);
 
+  const isStrikeCount = (count: number) => count >= 2 && count <= 3;
+
   return (
     <View style={styles.container}>
       {/* Header */}
