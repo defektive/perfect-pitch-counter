@@ -1,0 +1,63 @@
+name: Build iOS App
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      buildType:
+        description: 'Build type'
+        required: true
+        type: choice
+        options:
+          - ipa
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3'
+
+      - name: Install Expo CLI
+        run: npm install -g eas-cli
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v2
+        with:
+          xcode-version: 'latest'
+
+      - name: Setup Ruby Bundler
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+        env:
+          BUNDLE_WITH: 'development'
+          BUNDLE_PATH: 'vendor/bundle'
+
+      - name: Install CocoaPods dependencies
+        run: |
+          cd react-native
+          pod install --repo-update --verbose
+
+      - name: Build iOS
+        run: |
+          cd react-native
+          npx expo export:ios --output app/build/
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: pitch-counter-ipa-${{ github.ref_name }}
+          path: react-native/app/build/
