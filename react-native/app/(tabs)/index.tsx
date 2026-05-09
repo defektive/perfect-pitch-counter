@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { usePitchGame } from '@/hooks/use-pitch-game';
 import { CounterDisplay } from '@/components/ui/counter-display';
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,6 @@ export default function PitchCounterScreen() {
     incrementStrike,
     incrementBall,
     incrementHit,
-    incrementOut,
     exportToJson,
     exportToCsv,
   } = usePitchGame();
@@ -20,124 +19,143 @@ export default function PitchCounterScreen() {
     console.log('Export CSV:', exportToCsv());
   }, [exportToJson, exportToCsv]);
 
-  const strikePercentage =
-    usePitchGame.getState().totalBalls > 0 &&
-    usePitchGame.getState().totalStrikes > 0
-      ? ((usePitchGame.getState().totalStrikes /
-          (usePitchGame.getState().totalBalls +
-            usePitchGame.getState().totalStrikes)) *
-        100).toFixed(0)
-      : 0;
+  const getBatters = () => usePitchGame.getState().outCount + usePitchGame.getState().hitCount + usePitchGame.getState().walkCount;
+  const getRuns = () => Math.max(0, (usePitchGame.getState().hitCount + usePitchGame.getState().walkCount) - 3);
+  const getStrikePercentage = () => {
+    const total = usePitchGame.getState().totalBalls + usePitchGame.getState().totalStrikes;
+    return total > 0 ? Math.round((usePitchGame.getState().totalStrikes / total) * 100) : 0;
+  };
+  const getBallPercentage = () => {
+    const total = usePitchGame.getState().totalBalls + usePitchGame.getState().totalStrikes;
+    return total > 0 ? Math.round((usePitchGame.getState().totalBalls / total) * 100) : 0;
+  };
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Pitch Session</Text>
-        <Text style={styles.subHeader}>
-          Balls: {usePitchGame.getState().totalBalls} | Strikes: {usePitchGame.getState().totalStrikes} | Strike %: {strikePercentage}%
-        </Text>
-      </View>
-
-      {/* Strike Zone */}
+      {/* Main Counter Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Strike Zone</Text>
-        <View style={styles.zoneContainer}>
-          <View style={styles.zoneItem}>
-            <Text style={styles.zoneLabel}>Current</Text>
-            <CounterDisplay
-              count={usePitchGame.getState().currentStrikes}
-              subtitle="Strikes"
-              style={styles.zoneCounter}
-            />
+        <Text style={styles.sectionTitle}>Pitch Counters</Text>
+
+        {/* Strikes Row */}
+        <TouchableOpacity
+          style={styles.counterRow}
+          onPress={incrementStrike}
+          activeOpacity={0.7}>
+          <View style={styles.counterLabel}>
+            <Text style={styles.counterLabelTitle}>Strikes</Text>
+            <Text style={styles.counterLabelSubtitle}>Current: {usePitchGame.getState().currentStrikes} / Total: {usePitchGame.getState().totalStrikes}</Text>
           </View>
-          <View style={styles.zoneItem}>
-            <Text style={styles.zoneLabel}>Balls</Text>
-            <CounterDisplay
-              count={usePitchGame.getState().currentBalls}
-              subtitle="Balls"
-              style={styles.zoneCounter}
-            />
-          </View>
-        </View>
-        <View style={styles.actionRow}>
-          <Button
-            title="STRIKE"
-            onPress={incrementStrike}
-            style={styles.actionButton}
-            icon="checkmark"
+          <CounterDisplay
+            count={usePitchGame.getState().currentStrikes}
+            title="Strikes"
           />
-        </View>
+        </TouchableOpacity>
+
+        {/* Balls Row */}
+        <TouchableOpacity
+          style={styles.counterRow}
+          onPress={incrementBall}
+          activeOpacity={0.7}>
+          <View style={styles.counterLabel}>
+            <Text style={styles.counterLabelTitle}>Balls</Text>
+            <Text style={styles.counterLabelSubtitle}>Current: {usePitchGame.getState().currentBalls} / Total: {usePitchGame.getState().totalBalls}</Text>
+          </View>
+          <CounterDisplay
+            count={usePitchGame.getState().currentBalls}
+            title="Balls"
+          />
+        </TouchableOpacity>
+
+        {/* Hits Row */}
+        <TouchableOpacity
+          style={styles.counterRow}
+          onPress={incrementHit}
+          activeOpacity={0.7}>
+          <View style={styles.counterLabel}>
+            <Text style={styles.counterLabelTitle}>Hits</Text>
+            <Text style={styles.counterLabelSubtitle}>Total hits allowed</Text>
+          </View>
+          <CounterDisplay
+            count={usePitchGame.getState().hitCount}
+            title="Hits"
+          />
+        </TouchableOpacity>
       </View>
 
-      {/* Non-strike zone */}
+      {/* Calculated Stats Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Non-Strike Zone</Text>
-        <View style={styles.zoneContainer}>
-          <View style={styles.zoneItem}>
-            <Text style={styles.zoneLabel}>Total Balls</Text>
-            <CounterDisplay
-              count={usePitchGame.getState().totalBalls}
-              subtitle="Balls"
-              style={styles.zoneCounter}
-            />
+        <Text style={styles.sectionTitle}>Game Stats</Text>
+
+        {/* Batters & Outs Row */}
+        <View style={styles.statRow}>
+          <View style={styles.statCell}>
+            <Text style={styles.statTitle}>Batters</Text>
+            <Text style={styles.statValue}>{getBatters()}</Text>
           </View>
-          <View style={styles.zoneItem}>
-            <Text style={styles.zoneLabel}>Total Strikes</Text>
-            <CounterDisplay
-              count={usePitchGame.getState().totalStrikes}
-              subtitle="Strikes"
-              style={styles.zoneCounter}
-            />
+          <View style={styles.statCell}>
+            <Text style={styles.statTitle}>Outs</Text>
+            <Text style={styles.statValue}>{usePitchGame.getState().outCount}</Text>
           </View>
         </View>
-        <View style={styles.actionRow}>
-          <Button
-            title="BALL"
-            onPress={incrementBall}
-            style={styles.actionButton}
-            icon="circle"
-          />
+
+        {/* Walks & Runs Row */}
+        <View style={styles.statRow}>
+          <View style={styles.statCell}>
+            <Text style={styles.statTitle}>Walks</Text>
+            <Text style={styles.statValue}>{usePitchGame.getState().walkCount}</Text>
+          </View>
+          <View style={styles.statCell}>
+            <Text style={styles.statTitle}>Runs</Text>
+            <Text style={styles.statValue}>{getRuns()}</Text>
+          </View>
+        </View>
+
+        {/* Strike/Ball Totals Row */}
+        <View style={styles.statRow}>
+          <View style={styles.statCell}>
+            <Text style={styles.statTitle}>Total Strikes</Text>
+            <Text style={styles.statValue}>{usePitchGame.getState().totalStrikes}</Text>
+          </View>
+          <View style={styles.statCell}>
+            <Text style={styles.statTitle}>Total Balls</Text>
+            <Text style={styles.statValue}>{usePitchGame.getState().totalBalls}</Text>
+          </View>
+        </View>
+
+        {/* Strike % Row */}
+        <View style={styles.statRow}>
+          <View style={styles.statCell}>
+            <Text style={styles.statTitle}>Strike %</Text>
+            <Text style={styles.statValue}>{getStrikePercentage()}%</Text>
+          </View>
+          <View style={styles.statCell}>
+            <Text style={styles.statTitle}>Ball %</Text>
+            <Text style={styles.statValue}>{getBallPercentage()}%</Text>
+          </View>
+        </View>
+
+        {/* Total Pitches Row */}
+        <View style={styles.statRow}>
+          <View style={styles.statCell}>
+            <Text style={styles.statTitle}>Total Pitches</Text>
+            <Text style={styles.statValue}>
+              {usePitchGame.getState().totalBalls + usePitchGame.getState().totalStrikes + usePitchGame.getState().hitCount}
+            </Text>
+          </View>
         </View>
       </View>
 
-      {/* Hitters / Outs */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Hitters / Outs</Text>
-        <View style={styles.hittersContainer}>
-          <View style={styles.hittersItem}>
-            <Text style={styles.hittersLabel}>Outs</Text>
-            <CounterDisplay
-              count={usePitchGame.getState().outCount}
-              title="Outs"
-            />
-          </View>
-          <View style={styles.hittersItem}>
-            <Text style={styles.hittersLabel}>Hits</Text>
-            <CounterDisplay
-              count={usePitchGame.getState().hitCount}
-              title="Hits"
-            />
-          </View>
-        </View>
-        <View style={styles.actionRow}>
-          <Button
-            title="HIT"
-            onPress={incrementHit}
-            style={styles.actionButton}
-            icon="star"
-          />
-          <Button
-            title="OUT"
-            onPress={incrementOut}
-            style={styles.actionButton}
-            icon="trash"
-          />
-        </View>
+      {/* Reset Section */}
+      <View style={styles.resetSection}>
+        <Button
+          title="Reset All Counters"
+          onPress={() => usePitchGame.getState().resetCounters()}
+          variant="secondary"
+        />
       </View>
 
-      {/* Export */}
-      <View style={styles.footer}>
+      {/* Export Section */}
+      <View style={styles.exportSection}>
         <Button
           title="Export Data"
           onPress={handleExport}
@@ -153,81 +171,71 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background.card,
   },
-  header: {
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.xl,
-    backgroundColor: Colors.background.primary,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.divider.light,
-  },
-  headerTitle: {
-    fontSize: Typography.h2.fontSize,
-    fontWeight: Typography.h2.fontWeight,
-    color: Colors.text.primary,
-    textAlign: 'center',
-  },
-  subHeader: {
-    fontSize: Typography.subtitle.fontSize,
-    color: Colors.text.tertiary,
-    textAlign: 'center',
-    marginTop: Spacing.sm,
-  },
   section: {
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.sm,
+    paddingVertical: Spacing.md,
   },
   sectionTitle: {
     fontSize: Typography.subtitle.fontSize,
     color: Colors.text.tertiary,
     textTransform: 'uppercase',
+    paddingHorizontal: Spacing.xl,
     marginBottom: Spacing.md,
     letterSpacing: 0.5,
   },
-  zoneContainer: {
+  counterRow: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: Spacing.md,
+    alignItems: 'center',
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.md,
+    backgroundColor: Colors.background.primary,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.divider.light,
   },
-  zoneItem: {
+  counterLabel: {
+    flex: 1,
+  },
+  counterLabelTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.text.primary,
+  },
+  counterLabelSubtitle: {
+    fontSize: 11,
+    color: Colors.text.secondary,
+    marginTop: 2,
+  },
+  statRow: {
+    flexDirection: 'row',
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.md,
+    backgroundColor: Colors.background.primary,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.divider.light,
+  },
+  statCell: {
     flex: 1,
     alignItems: 'center',
+    paddingHorizontal: Spacing.sm,
   },
-  zoneLabel: {
+  statTitle: {
     fontSize: 12,
     color: Colors.text.tertiary,
-    marginBottom: Spacing.xs,
     textTransform: 'uppercase',
-  },
-  zoneCounter: {
-    minHeight: 0,
-  },
-  actionRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  actionButton: {
-    flex: 1,
-    marginHorizontal: Spacing.xs,
-  },
-  hittersContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: Spacing.md,
-  },
-  hittersItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  hittersLabel: {
-    fontSize: 12,
-    color: Colors.text.tertiary,
     marginBottom: Spacing.xs,
-    textTransform: 'uppercase',
   },
-  footer: {
+  statValue: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: Colors.text.primary,
+  },
+  resetSection: {
+    padding: Spacing.md,
+    paddingBottom: Spacing.md,
+    backgroundColor: Colors.background.primary,
+  },
+  exportSection: {
     padding: Spacing.md,
     paddingBottom: Spacing.xl,
-    alignItems: 'center',
     backgroundColor: Colors.background.primary,
     borderTopWidth: 1,
     borderTopColor: Colors.divider.light,

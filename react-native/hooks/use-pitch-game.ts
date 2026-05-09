@@ -9,7 +9,7 @@ interface PitchGameState {
   totalBalls: number;
   totalStrikes: number;
   totalPitches: number;
-  // Current count
+  // Current count (resets with each batter)
   currentBalls: number;
   currentStrikes: number;
   // Stats
@@ -95,10 +95,16 @@ export const usePitchGame = create<PitchGameState>((set, get) => ({
     const newTotalStrikes = state.totalStrikes + 1;
     const newTotalPitches = state.totalPitches + 1;
 
-    // 3 strikes = 1 out
-    const newOutCount = newCurrentStrikes >= 3 ? state.outCount + 1 : state.outCount;
-    const newCurrentBalls = newCurrentStrikes >= 3 ? 0 : state.currentBalls;
-    const newCurrentStrikesAfterOut = newCurrentStrikes >= 3 ? 0 : newCurrentStrikes;
+    // 3 strikes = 1 out, reset current count for next batter
+    let newCurrentBalls = state.currentBalls;
+    let newCurrentStrikesAfterOut = newCurrentStrikes;
+    let newOutCount = newCurrentStrikes >= 3 ? state.outCount + 1 : state.outCount;
+
+    if (newCurrentStrikes >= 3) {
+      // Batter is out, reset current count for next batter
+      newCurrentBalls = 0;
+      newCurrentStrikesAfterOut = 0;
+    }
 
     const newStrikePercentage = newTotalPitches > 0 ? Math.round((newTotalStrikes / newTotalPitches) * 100) : 0;
 
@@ -118,9 +124,15 @@ export const usePitchGame = create<PitchGameState>((set, get) => ({
     const newTotalBalls = state.totalBalls + 1;
     const newTotalPitches = state.totalPitches + 1;
 
-    // 4 balls = 1 walk
-    const newWalkCount = newCurrentBalls >= 4 ? state.walkCount + 1 : state.walkCount;
-    const newCurrentBallsAfterWalk = newCurrentBalls >= 4 ? 0 : newCurrentBalls;
+    // 4 balls = 1 walk, reset current count for next batter
+    let newWalkCount = state.walkCount;
+    let newCurrentBallsAfterWalk = newCurrentBalls;
+
+    if (newCurrentBalls >= 4) {
+      // Batter walks, reset current count for next batter
+      newWalkCount = state.walkCount + 1;
+      newCurrentBallsAfterWalk = 0;
+    }
 
     const newBallPercentage = newTotalPitches > 0 ? Math.round((newTotalBalls / newTotalPitches) * 100) : 0;
 
@@ -136,11 +148,14 @@ export const usePitchGame = create<PitchGameState>((set, get) => ({
   incrementHit() {
     const state = get();
 
+    // On a hit, reset current count for next batter
     set({
       hitCount: state.hitCount + 1,
       currentBalls: 0,
       currentStrikes: 0,
       totalPitches: state.totalPitches + 1,
+      totalStrikes: state.totalStrikes,
+      totalBalls: state.totalBalls,
     });
   },
 
@@ -155,9 +170,15 @@ export const usePitchGame = create<PitchGameState>((set, get) => ({
 
     const newBallPercentage = newTotalPitches > 0 ? Math.round((newTotalBalls / newTotalPitches) * 100) : 0;
 
+    // Check if this walk resulted in a walk
+    let newCurrentBallsAfterWalk = newCurrentBalls;
+    if (newCurrentBalls >= 4) {
+      newCurrentBallsAfterWalk = 0;
+    }
+
     set({
       walkCount: newWalkCount,
-      currentBalls: newCurrentBalls,
+      currentBalls: newCurrentBallsAfterWalk,
       totalBalls: newTotalBalls,
       totalPitches: newTotalPitches,
       ballPercentage: newBallPercentage,
