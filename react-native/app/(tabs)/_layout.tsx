@@ -7,14 +7,17 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
 
 export default function TabLayout() {
+  const colorScheme = useColorScheme();
+  const mode = colorScheme ?? 'light';
+
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors.accent.primary,
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: Colors.light.primary,
-          borderTopColor: Colors.light.divider,
+          backgroundColor: mode === 'dark' ? Colors.dark.primary : Colors.light.primary,
+          borderTopColor: mode === 'dark' ? Colors.dark.divider : Colors.light.divider,
           height: Platform.OS === 'ios' ? 89 : 65,
           paddingBottom: Platform.OS === 'ios' ? 29 : 12,
           borderBottomWidth: 1,
@@ -28,7 +31,7 @@ export default function TabLayout() {
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: '600',
-          color: Colors.light.text.primary,
+          color: mode === 'dark' ? Colors.dark.text.primary : Colors.light.text.primary,
         },
       }}>
       <Tabs.Screen

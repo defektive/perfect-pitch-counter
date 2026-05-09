@@ -6,6 +6,8 @@ import { usePitchGame } from '@/hooks/use-pitch-game';
 import { Typography, Spacing, Colors } from '@/constants/theme';
 
 export default function SettingsScreen() {
+  const colorScheme = useColorScheme();
+  const mode = colorScheme ?? 'light';
 
   const handleResetAll = async () => {
     Alert.alert(
@@ -21,47 +23,51 @@ export default function SettingsScreen() {
     );
   };
 
-  return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: Spacing.xl }}>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Data Management</Text>
+  const backgroundColor = mode === 'dark' ? Colors.dark.primary : Colors.light.card;
+  const dividerColor = mode === 'dark' ? Colors.dark.divider : Colors.light.divider;
+  const textColor = mode === 'dark' ? Colors.dark.text : Colors.light.text;
 
-        <TouchableOpacity style={styles.actionItem} onPress={handleResetAll}>
-          <View style={styles.actionLeft}>
-            <Text style={styles.actionIcon}>🔄</Text>
-            <View style={styles.actionTextContainer}>
-              <Text style={styles.actionTitle}>Reset All Data</Text>
-              <Text style={styles.actionSubtitle}>Clear all counters and game data</Text>
+  return (
+    <ScrollView style={{ flex: 1, backgroundColor }} contentContainerStyle={{ paddingBottom: Spacing.xl }}>
+      <View style={{ paddingHorizontal: Spacing.xl, paddingVertical: Spacing.md }}>
+        <Text style={{ fontSize: Typography.subtitle.fontSize, color: textColor.tertiary, marginBottom: Spacing.md, textTransform: 'uppercase', letterSpacing: 0.5 }}>Data Management</Text>
+
+        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: Spacing.sm }} onPress={handleResetAll}>
+          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ fontSize: 20 }}>🔄</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 16, fontWeight: '600', color: textColor.primary }}>Reset All Data</Text>
+              <Text style={{ fontSize: 12, color: textColor.secondary, marginTop: 2 }}>Clear all counters and game data</Text>
             </View>
           </View>
-          <Text style={styles.actionChevron}>›</Text>
+          <Text style={{ fontSize: 24, color: textColor.muted }}>›</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.actionItem}
+          style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: Spacing.sm }}
           onPress={() => Alert.alert('Settings', 'App preferences and options.')}>
-          <View style={styles.actionLeft}>
-            <Text style={styles.actionIcon}>⚙️</Text>
-            <View style={styles.actionTextContainer}>
-              <Text style={styles.actionTitle}>Settings</Text>
-              <Text style={styles.actionSubtitle}>App preferences and options</Text>
+          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ fontSize: 20 }}>⚙️</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 16, fontWeight: '600', color: textColor.primary }}>Settings</Text>
+              <Text style={{ fontSize: 12, color: textColor.secondary, marginTop: 2 }}>App preferences and options</Text>
             </View>
           </View>
-          <Text style={styles.actionChevron}>›</Text>
+          <Text style={{ fontSize: 24, color: textColor.muted }}>›</Text>
         </TouchableOpacity>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>About</Text>
+      <View style={{ paddingHorizontal: Spacing.xl, paddingVertical: Spacing.md }}>
+        <Text style={{ fontSize: Typography.subtitle.fontSize, color: textColor.tertiary, marginBottom: Spacing.md, textTransform: 'uppercase', letterSpacing: 0.5 }}>About</Text>
 
-        <View style={styles.infoItem}>
-          <Text style={styles.infoTitle}>Version</Text>
-          <Text style={styles.infoValue}>0.1.5</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: Spacing.sm, borderBottomWidth: 1, borderBottomColor: dividerColor }}>
+          <Text style={{ fontSize: 14, color: textColor.secondary }}>Version</Text>
+          <Text style={{ fontSize: 14, color: textColor.primary }}>0.1.5</Text>
         </View>
 
-        <View style={styles.infoItem}>
-          <Text style={styles.infoTitle}>Platform</Text>
-          <Text style={styles.infoValue}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: Spacing.sm, borderBottomWidth: 1, borderBottomColor: dividerColor }}>
+          <Text style={{ fontSize: 14, color: textColor.secondary }}>Platform</Text>
+          <Text style={{ fontSize: 14, color: textColor.primary }}>
             {Platform.OS === 'ios' ? 'iOS' : Platform.OS === 'android' ? 'Android' : 'Web'}
           </Text>
         </View>
@@ -69,66 +75,3 @@ export default function SettingsScreen() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.light.card,
-  },
-  section: {
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.md,
-  },
-  sectionTitle: {
-    fontSize: Typography.subtitle.fontSize,
-    color: Colors.text.tertiary,
-    marginBottom: Spacing.md,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  actionItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: Spacing.sm,
-  },
-  actionLeft: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  actionIcon: {
-    fontSize: 20,
-  },
-  actionTextContainer: {
-    flex: 1,
-  },
-  actionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: Colors.text.primary,
-  },
-  actionSubtitle: {
-    fontSize: 12,
-    color: Colors.text.secondary,
-    marginTop: 2,
-  },
-  actionChevron: {
-    fontSize: 24,
-    color: Colors.text.muted,
-  },
-  infoItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: Spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.light.divider,
-  },
-  infoTitle: {
-    fontSize: 14,
-    color: Colors.text.secondary,
-  },
-  infoValue: {
-    fontSize: 14,
-    color: Colors.text.primary,
-  },
-});

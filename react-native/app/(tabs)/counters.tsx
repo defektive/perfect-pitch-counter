@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, Modal, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, Alert, Modal, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 import { useColorScheme } from 'react-native';
 import { useCounterManager } from '@/hooks/use-counter-manager';
 import { CounterDisplay } from '@/components/ui/counter-display';
@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Typography, Spacing, Colors } from '@/constants/theme';
 
 export default function CountersScreen() {
+  const colorScheme = useColorScheme();
+  const mode = colorScheme ?? 'light';
 
   const { counters } = useCounterManager();
 
@@ -56,72 +58,74 @@ export default function CountersScreen() {
     }
   };
 
+  const backgroundColor = mode === 'dark' ? Colors.dark.primary : Colors.light.card;
+  const dividerColor = mode === 'dark' ? Colors.dark.divider : Colors.light.divider;
+  const darkAccent = mode === 'dark' ? Colors.dark : Colors.light;
+  const textColor = mode === 'dark' ? Colors.dark.text : Colors.light.text;
+
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={{ flex: 1, backgroundColor }}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       {/* Most Used Counter */}
       {topCounter && (
-        <View style={[styles.topCounter, { backgroundColor: Colors.accent.primaryLight }]}>
-          <View style={styles.topIconContainer}>
-            <Text style={styles.topIcon}>📈</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', padding: Spacing.md, paddingHorizontal: Spacing.xl, backgroundColor: darkAccent.accent.primaryLight }}>
+          <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: darkAccent.accent.primary, justifyContent: 'center', alignItems: 'center' }}>
+            <Text style={{ fontSize: 20 }}>📈</Text>
           </View>
-          <View style={styles.topTextContainer}>
-            <Text style={styles.topLabel}>Most Used Counter</Text>
-            <Text style={styles.topName}>{topCounter.name}</Text>
-            <Text style={styles.topValue}>{topCounter.totalIncrements} uses</Text>
+          <View style={{ flex: 1, marginLeft: Spacing.md }}>
+            <Text style={{ fontSize: Typography.subtitle.fontSize, color: darkAccent.text.secondary, textTransform: 'uppercase', marginBottom: Spacing.xs }}>Most Used Counter</Text>
+            <Text style={{ fontSize: Typography.h3.fontSize, fontWeight: Typography.h3.fontWeight, color: darkAccent.accent.primary, marginBottom: Spacing.xs }}>{topCounter.name}</Text>
+            <Text style={{ fontSize: Typography.caption.fontSize, color: darkAccent.text.secondary }}>{topCounter.totalIncrements} uses</Text>
           </View>
         </View>
       )}
 
       {/* Empty state */}
       {counters.length === 0 && (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyText}>No counters yet. Tap + to add one.</Text>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: Spacing.lg }}>
+          <Text style={{ color: textColor.secondary, fontSize: 16, textAlign: 'center' }}>No counters yet. Tap + to add one.</Text>
         </View>
       )}
 
       {/* Counter List */}
-      <ScrollView style={styles.list} contentContainerStyle={{ paddingBottom: 100 }}>
+      <ScrollView style={{ flex: 1 }}>
         {counters.map((counter) => (
           <TouchableOpacity
             key={counter.id}
-            style={[styles.counterRow, { backgroundColor: Colors.light.primary }]}>
-            <View style={styles.counterName}>
-              <Text style={styles.counterNameText}>{counter.name}</Text>
+            style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.xl, paddingVertical: Spacing.md, backgroundColor }}>
+            <View style={{ flex: 2 }}>
+              <Text style={{ fontSize: 18, fontWeight: '600', color: textColor.primary }}>{counter.name}</Text>
             </View>
 
-            <View style={styles.counterValue}>
+            <View style={{ flex: 3, alignItems: 'center', justifyContent: 'center' }}>
               <CounterDisplay
-                count={(counter.count || 0)}
+                count={counter.count || 0}
                 title={counter.hasBeenUsed ? counter.name.toUpperCase() : ''}
               />
             </View>
 
-            <View style={styles.counterActions}>
+            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
               <TouchableOpacity
-                style={[styles.actionBtn, (counter.count || 0) === 0 && styles.disabledBtn]}
+                style={{ width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginRight: Spacing.xs, backgroundColor: mode === 'dark' ? Colors.dark.primary : Colors.light.primary, borderWidth: 1, borderColor: dividerColor }}
                 onPress={() => handleDecrement(counter.id)}
                 disabled={(counter.count || 0) === 0}>
-                <Text style={styles.actionIcon}>−</Text>
+                <Text style={{ fontSize: 20, color: textColor.primary }}>−</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={styles.actionBtn}
-                onPress={() => handleIncrement(counter.id)}>
-                <Text style={styles.actionIcon}>+</Text>
+                style={{ width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginRight: Spacing.xs, backgroundColor: mode === 'dark' ? Colors.dark.primary : Colors.light.primary, borderWidth: 1, borderColor: dividerColor }}>
+                <Text style={{ fontSize: 20, color: textColor.primary }}>+</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.actionBtn, styles.iconBtn]}
-                onPress={() => handleResetCounter(counter.id)}>
-                <Text style={styles.actionIcon}>🔄</Text>
+                style={{ width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginRight: 0, backgroundColor: 'transparent', borderWidth: 0 }}>
+                <Text style={{ fontSize: 20, color: textColor.primary }}>🔄</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.actionBtn, styles.iconBtn, styles.deleteBtn]}
-                onPress={() => handleDeleteCounter(counter.id)}>
-                <Text style={styles.actionIcon}>🗑️</Text>
+                style={{ width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginRight: 0 }}>
+                <Text style={{ fontSize: 20, color: textColor.primary }}>🗑️</Text>
               </TouchableOpacity>
             </View>
           </TouchableOpacity>
@@ -130,9 +134,8 @@ export default function CountersScreen() {
 
       {/* Add Counter FAB */}
       <TouchableOpacity
-        style={styles.addBtn}
-        onPress={() => setShowAddModal(true)}>
-        <Text style={styles.addBtnText}>+</Text>
+        style={{ position: 'absolute', bottom: 32, right: 32, width: 56, height: 56, borderRadius: 28, backgroundColor: Colors.accent.primary, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 4, elevation: 8 }}>
+        <Text style={{ fontSize: 28, color: textColor.primary }}>+</Text>
       </TouchableOpacity>
 
       {/* Add Modal */}
@@ -140,28 +143,27 @@ export default function CountersScreen() {
         visible={showAddModal}
         transparent
         animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Add New Counter</Text>
+        <View style={{ flex: 1, backgroundColor }}>
+          <View style={{ backgroundColor, borderRadius: 16, padding: Spacing.lg, width: '90%', maxWidth: 360, alignItems: 'center' }}>
+            <Text style={{ fontSize: 20, fontWeight: Typography.h3.fontWeight, color: textColor.primary, marginBottom: Spacing.md, textAlign: 'center' }}>Add New Counter</Text>
             <TextInput
-              style={styles.modalInput}
+              style={{ backgroundColor: mode === 'dark' ? Colors.dark.secondary : Colors.light.secondary, color: textColor.primary, borderRadius: 8, padding: Spacing.md, fontSize: 16, borderWidth: 1, borderColor: dividerColor, width: '100%', textAlign: 'center', minHeight: 44, flex: 1 }}
               placeholder="e.g., Jumps, Sprints"
-              placeholderTextColor={Colors.text.muted}
+              placeholderTextColor={textColor.muted}
               value={counterName}
               onChangeText={setCounterName}
               maxLength={50}
               autoFocus
             />
-            <View style={styles.modalButtons}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: Spacing.md, width: '100%' }}>
               <TouchableOpacity
-                style={[styles.modalBtn, styles.modalBtnCancel]}
-                onPress={() => setShowAddModal(false)}>
-                <Text style={styles.modalBtnText}>Cancel</Text>
+                style={{ flex: 1, paddingVertical: Spacing.sm, borderRadius: 8, alignItems: 'center', height: 44, marginHorizontal: 2, backgroundColor: mode === 'dark' ? Colors.dark.secondary : Colors.light.secondary, borderWidth: 1, borderColor: dividerColor }}>
+                <Text style={{ color: textColor.primary, fontSize: 16, fontWeight: '600' }}>Cancel</Text>
               </TouchableOpacity>
               <Button
                 title="Add"
                 onPress={handleAddCounter}
-                style={styles.modalBtnAdd}
+                style={{ flex: 1, height: 44 }}
               />
             </View>
           </View>
@@ -170,193 +172,3 @@ export default function CountersScreen() {
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.light.card,
-  },
-  topCounter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: Spacing.md,
-    paddingHorizontal: Spacing.xl,
-  },
-  topIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: Colors.accent.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  topIcon: {
-    fontSize: 20,
-  },
-  topTextContainer: {
-    flex: 1,
-    marginLeft: Spacing.md,
-  },
-  topLabel: {
-    fontSize: Typography.subtitle.fontSize,
-    color: Colors.text.secondary,
-    textTransform: 'uppercase',
-    marginBottom: Spacing.xs,
-  },
-  topName: {
-    fontSize: Typography.h3.fontSize,
-    fontWeight: Typography.h3.fontWeight,
-    color: Colors.accent.primary,
-    marginBottom: Spacing.xs,
-  },
-  topValue: {
-    fontSize: Typography.caption.fontSize,
-    color: Colors.text.secondary,
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.lg,
-  },
-  emptyText: {
-    color: Colors.text.secondary,
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  list: {
-    flex: 1,
-  },
-  counterRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.md,
-  },
-  counterName: {
-    flex: 2,
-  },
-  counterNameText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: Colors.text.primary,
-  },
-  counterValue: {
-    flex: 3,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  counterActions: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  actionBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: Spacing.xs,
-    backgroundColor: Colors.light.primary,
-    borderWidth: 1,
-    borderColor: Colors.light.divider,
-  },
-  disabledBtn: {
-    backgroundColor: Colors.light.secondary,
-    borderColor: Colors.light.divider,
-  },
-  iconBtn: {
-    backgroundColor: 'transparent',
-    borderWidth: 0,
-    marginRight: 0,
-  },
-  deleteBtn: {
-    marginRight: 0,
-  },
-  actionIcon: {
-    fontSize: 20,
-    color: Colors.text.primary,
-  },
-  addBtn: {
-    position: 'absolute',
-    bottom: 32,
-    right: 32,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: Colors.accent.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 8,
-  },
-  addBtnText: {
-    fontSize: 28,
-    color: Colors.text.primary,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: Colors.light.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    backgroundColor: Colors.light.primary,
-    borderRadius: 16,
-    padding: Spacing.lg,
-    width: '90%',
-    maxWidth: 360,
-    alignItems: 'center',
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: Typography.h3.fontWeight,
-    color: Colors.text.primary,
-    marginBottom: Spacing.md,
-    textAlign: 'center',
-  },
-  modalInput: {
-    backgroundColor: Colors.light.secondary,
-    color: Colors.text.primary,
-    borderRadius: 8,
-    padding: Spacing.md,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: Colors.light.divider,
-    width: '100%',
-    textAlign: 'center',
-    minHeight: 44,
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: Spacing.md,
-    width: '100%',
-  },
-  modalBtn: {
-    flex: 1,
-    paddingVertical: Spacing.sm,
-    borderRadius: 8,
-    alignItems: 'center',
-    height: 44,
-    marginHorizontal: 2,
-  },
-  modalBtnCancel: {
-    backgroundColor: Colors.light.secondary,
-    borderWidth: 1,
-    borderColor: Colors.light.divider,
-  },
-  modalBtnAdd: {
-    backgroundColor: Colors.accent.primary,
-  },
-  modalBtnText: {
-    color: Colors.text.primary,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});
