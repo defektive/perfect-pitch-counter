@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { usePitchGame } from '@/hooks/use-pitch-game';
 import { CounterDisplay } from '@/components/ui/counter-display';
 import { Button } from '@/components/ui/button';
+import { Colors, Typography, Spacing } from '@/constants/theme';
 
 export default function PitchCounterScreen() {
   const {
@@ -15,7 +16,6 @@ export default function PitchCounterScreen() {
   } = usePitchGame();
 
   const handleExport = useCallback(() => {
-    // Show export dialog
     console.log('Export JSON:', exportToJson());
     console.log('Export CSV:', exportToCsv());
   }, [exportToJson, exportToCsv]);
@@ -28,8 +28,6 @@ export default function PitchCounterScreen() {
             usePitchGame.getState().totalStrikes)) *
         100).toFixed(0)
       : 0;
-
-  const isStrikeCount = (count: number) => count >= 2 && count <= 3;
 
   return (
     <View style={styles.container}>
@@ -44,19 +42,21 @@ export default function PitchCounterScreen() {
       {/* Strike Zone */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Strike Zone</Text>
-        <View style={[styles.row, styles.striped]}>
-          <View style={[styles.counterCell, { backgroundColor: isStrikeCount(
-            usePitchGame.getState().currentStrikes
-          ) ? '#e3f2fd' : '#333' }]}>
+        <View style={styles.zoneContainer}>
+          <View style={styles.zoneItem}>
+            <Text style={styles.zoneLabel}>Current</Text>
             <CounterDisplay
               count={usePitchGame.getState().currentStrikes}
-              subtitle="Current"
+              subtitle="Strikes"
+              style={styles.zoneCounter}
             />
           </View>
-          <View style={[styles.counterCell, styles.borderCell]}>
+          <View style={styles.zoneItem}>
+            <Text style={styles.zoneLabel}>Balls</Text>
             <CounterDisplay
               count={usePitchGame.getState().currentBalls}
               subtitle="Balls"
+              style={styles.zoneCounter}
             />
           </View>
         </View>
@@ -73,17 +73,21 @@ export default function PitchCounterScreen() {
       {/* Non-strike zone */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Non-Strike Zone</Text>
-        <View style={[styles.row, { backgroundColor: '#1a1a1a' }]}>
-          <View style={[styles.counterCell, styles.borderCell]}>
+        <View style={styles.zoneContainer}>
+          <View style={styles.zoneItem}>
+            <Text style={styles.zoneLabel}>Total Balls</Text>
             <CounterDisplay
               count={usePitchGame.getState().totalBalls}
-              subtitle="Total Balls"
+              subtitle="Balls"
+              style={styles.zoneCounter}
             />
           </View>
-          <View style={[styles.counterCell, styles.borderCell]}>
+          <View style={styles.zoneItem}>
+            <Text style={styles.zoneLabel}>Total Strikes</Text>
             <CounterDisplay
               count={usePitchGame.getState().totalStrikes}
-              subtitle="Total Strikes"
+              subtitle="Strikes"
+              style={styles.zoneCounter}
             />
           </View>
         </View>
@@ -100,14 +104,16 @@ export default function PitchCounterScreen() {
       {/* Hitters / Outs */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Hitters / Outs</Text>
-        <View style={[styles.row, styles.outsRow]}>
-          <View style={[styles.counterCell, styles.outCell]}>
+        <View style={styles.hittersContainer}>
+          <View style={styles.hittersItem}>
+            <Text style={styles.hittersLabel}>Outs</Text>
             <CounterDisplay
               count={usePitchGame.getState().outCount}
               title="Outs"
             />
           </View>
-          <View style={[styles.counterCell, styles.outCell]}>
+          <View style={styles.hittersItem}>
+            <Text style={styles.hittersLabel}>Hits</Text>
             <CounterDisplay
               count={usePitchGame.getState().hitCount}
               title="Hits"
@@ -145,79 +151,85 @@ export default function PitchCounterScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: Colors.background.card,
   },
   header: {
-    padding: 16,
-    backgroundColor: '#1a1a1a',
-    alignItems: 'center',
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.xl,
+    backgroundColor: Colors.background.primary,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.divider.light,
   },
   headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontSize: Typography.h2.fontSize,
+    fontWeight: Typography.h2.fontWeight,
+    color: Colors.text.primary,
+    textAlign: 'center',
   },
   subHeader: {
-    fontSize: 14,
-    color: '#888',
-    marginTop: 4,
+    fontSize: Typography.subtitle.fontSize,
+    color: Colors.text.tertiary,
+    textAlign: 'center',
+    marginTop: Spacing.sm,
   },
   section: {
-    paddingVertical: 8,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.sm,
   },
   sectionTitle: {
+    fontSize: Typography.subtitle.fontSize,
+    color: Colors.text.tertiary,
+    textTransform: 'uppercase',
+    marginBottom: Spacing.md,
+    letterSpacing: 0.5,
+  },
+  zoneContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: Spacing.md,
+  },
+  zoneItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  zoneLabel: {
     fontSize: 12,
-    color: '#666',
-    paddingHorizontal: 16,
+    color: Colors.text.tertiary,
+    marginBottom: Spacing.xs,
     textTransform: 'uppercase',
   },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 8,
-  },
-  striped: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    flex: 1,
-    paddingHorizontal: 16,
-    backgroundColor: '#1a1a1a',
-  },
-  counterCell: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 8,
-    minHeight: 60,
-  },
-  borderCell: {
-    borderWidth: 1,
-    borderColor: '#333',
-    borderRadius: 8,
-    marginHorizontal: 4,
-    padding: 8,
-    minHeight: 80,
-  },
-  outsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 8,
-  },
-  outCell: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 8,
+  zoneCounter: {
+    minHeight: 0,
   },
   actionRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingVertical: 8,
   },
   actionButton: {
     flex: 1,
-    marginHorizontal: 4,
+    marginHorizontal: Spacing.xs,
+  },
+  hittersContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: Spacing.md,
+  },
+  hittersItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  hittersLabel: {
+    fontSize: 12,
+    color: Colors.text.tertiary,
+    marginBottom: Spacing.xs,
+    textTransform: 'uppercase',
   },
   footer: {
-    padding: 16,
+    padding: Spacing.md,
+    paddingBottom: Spacing.xl,
     alignItems: 'center',
+    backgroundColor: Colors.background.primary,
+    borderTopWidth: 1,
+    borderTopColor: Colors.divider.light,
   },
 });

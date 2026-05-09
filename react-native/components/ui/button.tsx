@@ -1,5 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ViewStyle } from 'react-native';
+import { Colors, Spacing } from '@/constants/theme';
 
 interface ButtonProps {
   title: string;
@@ -8,6 +9,11 @@ interface ButtonProps {
   icon?: string;
   style?: ViewStyle;
   disabled?: boolean;
+  textStyle?: {
+    fontSize?: number;
+    fontWeight?: number;
+    letterSpacing?: number;
+  };
 }
 
 export function Button({
@@ -17,51 +23,38 @@ export function Button({
   icon,
   style,
   disabled = false,
+  textStyle = { fontSize: 14, fontWeight: '600', letterSpacing: 1 },
 }: ButtonProps) {
-  const getBgColor = () => {
-    switch (variant) {
-      case 'primary':
-        return '#1976d2';
-      case 'secondary':
-        return '#444';
-      case 'ghost':
-        return 'transparent';
-      default:
-        return '#1976d2';
-    }
-  };
-
-  const getTextColor = () => '#fff';
-
   return (
     <TouchableOpacity
       style={[styles.button, disabled && styles.disabled, style]}
       onPress={onPress}
-      disabled={disabled}
-    >
-      <Text style={[styles.text, disabled && styles.disabledText]}>{title}</Text>
+      disabled={disabled}>
+      <Text style={[styles.text, disabled && styles.disabledText, {
+        fontSize: textStyle.fontSize || 14,
+        fontWeight: textStyle.fontWeight || '600',
+        letterSpacing: textStyle.letterSpacing || 1
+      }]}>{title}</Text>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    height: 48,
+    height: Spacing.md * 2,
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
     minHeight: 48,
+    borderWidth: 1,
   },
   disabled: {
     opacity: 0.5,
   },
   disabledText: {
-    color: '#999',
+    color: Colors.text.muted,
   },
   text: {
-    fontSize: 14,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
+    color: Colors.text.primary,
   },
 });

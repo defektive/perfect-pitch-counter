@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, Modal, KeyboardAvoidingView, ScrollView } from 'react-native';
-import { useCounterManager, ArbitraryCounter } from '@/hooks/use-counter-manager';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, Modal, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
+import { useCounterManager } from '@/hooks/use-counter-manager';
 import { CounterDisplay } from '@/components/ui/counter-display';
+import { Button } from '@/components/ui/button';
+import { Colors, Typography, Spacing } from '@/constants/theme';
 
 export default function CountersScreen() {
   const { counters } = useCounterManager();
@@ -52,20 +54,13 @@ export default function CountersScreen() {
     }
   };
 
-  const handleTapCounter = (counter: ArbitraryCounter) => {
-    if ((counter.count || 0) > 0) {
-      handleDecrement(counter.id);
-    }
-    handleIncrement(counter.id);
-  };
-
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior="padding">
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       {/* Most Used Counter */}
       {topCounter && (
-        <View style={[styles.topCounter, { backgroundColor: '#e3f2fd' }]}>
+        <View style={[styles.topCounter, { backgroundColor: Colors.accent.primaryLight }]}>
           <View style={styles.topIconContainer}>
             <Text style={styles.topIcon}>📈</Text>
           </View>
@@ -85,12 +80,11 @@ export default function CountersScreen() {
       )}
 
       {/* Counter List */}
-      <ScrollView style={styles.list}>
+      <ScrollView style={styles.list} contentContainerStyle={{ paddingBottom: 100 }}>
         {counters.map((counter) => (
           <TouchableOpacity
             key={counter.id}
-            style={[styles.counterRow, { backgroundColor: '#1a1a1a' }]}
-            onPress={() => handleTapCounter(counter)}>
+            style={[styles.counterRow, { backgroundColor: Colors.background.primary }]}>
             <View style={styles.counterName}>
               <Text style={styles.counterNameText}>{counter.name}</Text>
             </View>
@@ -136,8 +130,7 @@ export default function CountersScreen() {
       {/* Add Counter FAB */}
       <TouchableOpacity
         style={styles.addBtn}
-        onPress={() => setShowAddModal(true)}
-      >
+        onPress={() => setShowAddModal(true)}>
         <Text style={styles.addBtnText}>+</Text>
       </TouchableOpacity>
 
@@ -152,10 +145,11 @@ export default function CountersScreen() {
             <TextInput
               style={styles.modalInput}
               placeholder="e.g., Jumps, Sprints"
-              placeholderTextColor="#999"
+              placeholderTextColor={Colors.text.muted}
               value={counterName}
               onChangeText={setCounterName}
               maxLength={50}
+              autoFocus
             />
             <View style={styles.modalButtons}>
               <TouchableOpacity
@@ -163,11 +157,11 @@ export default function CountersScreen() {
                 onPress={() => setShowAddModal(false)}>
                 <Text style={styles.modalBtnText}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalBtn, styles.modalBtnAdd]}
-                onPress={handleAddCounter}>
-                <Text style={styles.modalBtnText}>Add</Text>
-              </TouchableOpacity>
+              <Button
+                title="Add"
+                onPress={handleAddCounter}
+                style={styles.modalBtnAdd}
+              />
             </View>
           </View>
         </View>
@@ -179,19 +173,19 @@ export default function CountersScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: Colors.background.card,
   },
   topCounter: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    paddingHorizontal: 16,
+    padding: Spacing.md,
+    paddingHorizontal: Spacing.xl,
   },
   topIconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#1976d2',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: Colors.accent.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -200,33 +194,34 @@ const styles = StyleSheet.create({
   },
   topTextContainer: {
     flex: 1,
-    marginLeft: 12,
+    marginLeft: Spacing.md,
   },
   topLabel: {
-    fontSize: 12,
-    color: '#666',
+    fontSize: Typography.subtitle.fontSize,
+    color: Colors.text.secondary,
     textTransform: 'uppercase',
+    marginBottom: Spacing.xs,
   },
   topName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1976d2',
-    marginTop: 2,
+    fontSize: Typography.h3.fontSize,
+    fontWeight: Typography.h3.fontWeight,
+    color: Colors.accent.primary,
+    marginBottom: Spacing.xs,
   },
   topValue: {
-    fontSize: 12,
-    color: '#888',
-    marginTop: 2,
+    fontSize: Typography.caption.fontSize,
+    color: Colors.text.secondary,
   },
   emptyState: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 32,
+    paddingHorizontal: Spacing.lg,
   },
   emptyText: {
-    color: '#888',
+    color: Colors.text.secondary,
     fontSize: 16,
+    textAlign: 'center',
   },
   list: {
     flex: 1,
@@ -234,8 +229,8 @@ const styles = StyleSheet.create({
   counterRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.md,
   },
   counterName: {
     flex: 2,
@@ -243,11 +238,12 @@ const styles = StyleSheet.create({
   counterNameText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#fff',
+    color: Colors.text.primary,
   },
   counterValue: {
     flex: 3,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   counterActions: {
     flex: 1,
@@ -261,13 +257,18 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 4,
+    marginRight: Spacing.xs,
+    backgroundColor: Colors.background.primary,
+    borderWidth: 1,
+    borderColor: Colors.border.light,
   },
   disabledBtn: {
-    backgroundColor: '#333',
+    backgroundColor: Colors.background.secondary,
+    borderColor: Colors.border.dark,
   },
   iconBtn: {
     backgroundColor: 'transparent',
+    borderWidth: 0,
     marginRight: 0,
   },
   deleteBtn: {
@@ -275,7 +276,7 @@ const styles = StyleSheet.create({
   },
   actionIcon: {
     fontSize: 20,
-    color: '#fff',
+    color: Colors.text.primary,
   },
   addBtn: {
     position: 'absolute',
@@ -284,61 +285,76 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#1976d2',
+    backgroundColor: Colors.accent.primary,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: Colors.accent.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 8,
   },
   addBtnText: {
     fontSize: 28,
-    color: '#fff',
+    color: Colors.text.primary,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.8)',
+    backgroundColor: 'rgba(0,0,0,0.7)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: Colors.background.primary,
     borderRadius: 16,
-    padding: 24,
-    width: '85%',
-    maxWidth: 340,
+    padding: Spacing.lg,
+    width: '90%',
+    maxWidth: 360,
+    alignItems: 'center',
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 16,
+    fontWeight: Typography.h3.fontWeight,
+    color: Colors.text.primary,
+    marginBottom: Spacing.md,
+    textAlign: 'center',
   },
   modalInput: {
-    backgroundColor: '#333',
-    color: '#fff',
+    backgroundColor: Colors.background.secondary,
+    color: Colors.text.primary,
     borderRadius: 8,
-    padding: 12,
+    padding: Spacing.md,
     fontSize: 16,
     borderWidth: 1,
-    borderColor: '#444',
+    borderColor: Colors.border.light,
+    width: '100%',
+    textAlign: 'center',
+    minHeight: 44,
   },
   modalButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 16,
+    marginTop: Spacing.md,
+    width: '100%',
   },
   modalBtn: {
     flex: 1,
-    paddingVertical: 12,
+    paddingVertical: Spacing.sm,
     borderRadius: 8,
     alignItems: 'center',
+    height: 44,
+    marginHorizontal: 2,
   },
   modalBtnCancel: {
-    backgroundColor: '#333',
+    backgroundColor: Colors.background.secondary,
+    borderWidth: 1,
+    borderColor: Colors.border.light,
   },
   modalBtnAdd: {
-    backgroundColor: '#1976d2',
+    backgroundColor: Colors.accent.primary,
   },
   modalBtnText: {
-    color: '#fff',
+    color: Colors.text.primary,
     fontSize: 16,
     fontWeight: '600',
   },
