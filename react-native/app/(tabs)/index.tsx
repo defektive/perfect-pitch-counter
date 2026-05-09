@@ -1,11 +1,13 @@
 import React, { useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useColorScheme } from 'react-native';
 import { usePitchGame } from '@/hooks/use-pitch-game';
 import { CounterDisplay } from '@/components/ui/counter-display';
 import { Button } from '@/components/ui/button';
-import { Colors, Typography, Spacing } from '@/constants/theme';
+import { Typography, Spacing, Colors } from '@/constants/theme';
 
 export default function PitchCounterScreen() {
+
   const {
     incrementStrike,
     incrementBall,
@@ -169,7 +171,7 @@ export default function PitchCounterScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.card,
+    backgroundColor: Colors.light.card,
   },
   section: {
     paddingVertical: Spacing.md,
@@ -187,9 +189,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: Spacing.xl,
     paddingVertical: Spacing.md,
-    backgroundColor: Colors.background.primary,
+    backgroundColor: Colors.light.primary,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.divider.light,
+    borderBottomColor: Colors.light.divider,
   },
   counterLabel: {
     flex: 1,
@@ -208,9 +210,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: Spacing.xl,
     paddingVertical: Spacing.md,
-    backgroundColor: Colors.background.primary,
+    backgroundColor: Colors.light.primary,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.divider.light,
+    borderBottomColor: Colors.light.divider,
   },
   statCell: {
     flex: 1,
@@ -231,13 +233,13 @@ const styles = StyleSheet.create({
   resetSection: {
     padding: Spacing.md,
     paddingBottom: Spacing.md,
-    backgroundColor: Colors.background.primary,
+    backgroundColor: Colors.light.primary,
   },
   exportSection: {
     padding: Spacing.md,
     paddingBottom: Spacing.xl,
-    backgroundColor: Colors.background.primary,
+    backgroundColor: Colors.light.primary,
     borderTopWidth: 1,
-    borderTopColor: Colors.divider.light,
+    borderTopColor: Colors.light.divider,
   },
 });

@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform } from 'react-native';
+import { useColorScheme } from 'react-native';
 
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
@@ -12,17 +13,22 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors.accent.primary,
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: Colors.background.primary,
-          borderTopColor: Colors.divider.light,
+          backgroundColor: Colors.light.primary,
+          borderTopColor: Colors.light.divider,
           height: Platform.OS === 'ios' ? 89 : 65,
           paddingBottom: Platform.OS === 'ios' ? 29 : 12,
           borderBottomWidth: 1,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          elevation: 4,
         },
         tabBarItemStyle: {},
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: '600',
-          color: '#fff',
+          color: Colors.light.text.primary,
         },
       }}>
       <Tabs.Screen

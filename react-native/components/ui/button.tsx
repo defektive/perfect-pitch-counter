@@ -9,11 +9,6 @@ interface ButtonProps {
   icon?: string;
   style?: ViewStyle;
   disabled?: boolean;
-  textStyle?: {
-    fontSize?: number;
-    fontWeight?: number;
-    letterSpacing?: number;
-  };
 }
 
 export function Button({
@@ -23,18 +18,13 @@ export function Button({
   icon,
   style,
   disabled = false,
-  textStyle = { fontSize: 14, fontWeight: '600', letterSpacing: 1 },
 }: ButtonProps) {
   return (
     <TouchableOpacity
       style={[styles.button, disabled && styles.disabled, style]}
       onPress={onPress}
       disabled={disabled}>
-      <Text style={[styles.text, disabled && styles.disabledText, {
-        fontSize: textStyle.fontSize || 14,
-        fontWeight: textStyle.fontWeight || '600',
-        letterSpacing: textStyle.letterSpacing || 1
-      }]}>{title}</Text>
+      <Text style={[styles.text, disabled && styles.disabledText]}>{title}</Text>
     </TouchableOpacity>
   );
 }
@@ -52,9 +42,12 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   disabledText: {
-    color: Colors.text.muted,
+    color: '#666',
   },
   text: {
-    color: Colors.text.primary,
+    fontSize: 14,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
 });

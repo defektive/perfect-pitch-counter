@@ -1,10 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform, Alert } from 'react-native';
+import { useColorScheme } from 'react-native';
 import { useCounterManager } from '@/hooks/use-counter-manager';
 import { usePitchGame } from '@/hooks/use-pitch-game';
-import { Colors, Typography, Spacing } from '@/constants/theme';
+import { Typography, Spacing, Colors } from '@/constants/theme';
 
 export default function SettingsScreen() {
+
   const handleResetAll = async () => {
     Alert.alert(
       'Reset All Data',
@@ -71,7 +73,7 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.card,
+    backgroundColor: Colors.light.card,
   },
   section: {
     paddingHorizontal: Spacing.xl,
@@ -119,7 +121,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: Spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.divider.light,
+    borderBottomColor: Colors.light.divider,
   },
   infoTitle: {
     fontSize: 14,

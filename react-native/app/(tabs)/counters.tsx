@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, Modal, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
+import { useColorScheme } from 'react-native';
 import { useCounterManager } from '@/hooks/use-counter-manager';
 import { CounterDisplay } from '@/components/ui/counter-display';
 import { Button } from '@/components/ui/button';
-import { Colors, Typography, Spacing } from '@/constants/theme';
+import { Typography, Spacing, Colors } from '@/constants/theme';
 
 export default function CountersScreen() {
+
   const { counters } = useCounterManager();
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -84,7 +86,7 @@ export default function CountersScreen() {
         {counters.map((counter) => (
           <TouchableOpacity
             key={counter.id}
-            style={[styles.counterRow, { backgroundColor: Colors.background.primary }]}>
+            style={[styles.counterRow, { backgroundColor: Colors.light.primary }]}>
             <View style={styles.counterName}>
               <Text style={styles.counterNameText}>{counter.name}</Text>
             </View>
@@ -93,7 +95,6 @@ export default function CountersScreen() {
               <CounterDisplay
                 count={(counter.count || 0)}
                 title={counter.hasBeenUsed ? counter.name.toUpperCase() : ''}
-                showBorder={false}
               />
             </View>
 
@@ -173,7 +174,7 @@ export default function CountersScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.card,
+    backgroundColor: Colors.light.card,
   },
   topCounter: {
     flexDirection: 'row',
@@ -258,13 +259,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: Spacing.xs,
-    backgroundColor: Colors.background.primary,
+    backgroundColor: Colors.light.primary,
     borderWidth: 1,
-    borderColor: Colors.border.light,
+    borderColor: Colors.light.divider,
   },
   disabledBtn: {
-    backgroundColor: Colors.background.secondary,
-    borderColor: Colors.border.dark,
+    backgroundColor: Colors.light.secondary,
+    borderColor: Colors.light.divider,
   },
   iconBtn: {
     backgroundColor: 'transparent',
@@ -288,7 +289,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.accent.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: Colors.accent.primary,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
@@ -300,12 +301,12 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    backgroundColor: Colors.light.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: Colors.background.primary,
+    backgroundColor: Colors.light.primary,
     borderRadius: 16,
     padding: Spacing.lg,
     width: '90%',
@@ -320,13 +321,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   modalInput: {
-    backgroundColor: Colors.background.secondary,
+    backgroundColor: Colors.light.secondary,
     color: Colors.text.primary,
     borderRadius: 8,
     padding: Spacing.md,
     fontSize: 16,
     borderWidth: 1,
-    borderColor: Colors.border.light,
+    borderColor: Colors.light.divider,
     width: '100%',
     textAlign: 'center',
     minHeight: 44,
@@ -346,9 +347,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
   },
   modalBtnCancel: {
-    backgroundColor: Colors.background.secondary,
+    backgroundColor: Colors.light.secondary,
     borderWidth: 1,
-    borderColor: Colors.border.light,
+    borderColor: Colors.light.divider,
   },
   modalBtnAdd: {
     backgroundColor: Colors.accent.primary,
