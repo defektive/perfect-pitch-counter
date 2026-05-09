@@ -55,6 +55,19 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="score"
+        options={{
+          title: 'Score',
+          tabBarIcon: ({ color, focused }) => (
+            <IconSymbol
+              size={focused ? 30 : 24}
+              name="star"
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="settings"
         options={{
           title: 'Settings',

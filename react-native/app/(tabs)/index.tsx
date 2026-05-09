@@ -20,6 +20,15 @@ export default function PitchCounterScreen() {
     console.log('Export CSV:', exportToCsv());
   }, [exportToJson, exportToCsv]);
 
+  const strikePercentage =
+    usePitchGame.getState().totalBalls > 0 &&
+    usePitchGame.getState().totalStrikes > 0
+      ? ((usePitchGame.getState().totalStrikes /
+          (usePitchGame.getState().totalBalls +
+            usePitchGame.getState().totalStrikes)) *
+        100).toFixed(0)
+      : 0;
+
   const isStrikeCount = (count: number) => count >= 2 && count <= 3;
 
   return (
@@ -28,7 +37,7 @@ export default function PitchCounterScreen() {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Pitch Session</Text>
         <Text style={styles.subHeader}>
-          Balls: {usePitchGame.getState().totalBalls} | Strikes: {usePitchGame.getState().totalStrikes}
+          Balls: {usePitchGame.getState().totalBalls} | Strikes: {usePitchGame.getState().totalStrikes} | Strike %: {strikePercentage}%
         </Text>
       </View>
 

@@ -1,12 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useCounterManager } from '@/hooks/use-counter-manager';
+import { usePitchGame } from '@/hooks/use-pitch-game';
 
 export default function SettingsScreen() {
-
   const handleResetAll = async () => {
-    if (confirm('Are you sure you want to reset all counters?')) {
-      await AsyncStorage.multiRemove(['counters', 'pitch-game']);
+    if (confirm('Reset All Data?')) {
+      await useCounterManager.getState().resetAll();
+      await usePitchGame.getState().resetGame();
     }
   };
 

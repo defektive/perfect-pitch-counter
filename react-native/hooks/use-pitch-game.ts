@@ -23,6 +23,10 @@ interface PitchGameState {
   persistenceKey: string;
   loadGame: () => Promise<void>;
   resetGame: () => Promise<void>;
+  // Pitch type counts
+  fbCount: number;
+  cuCount: number;
+  sfCount: number;
   // Actions
   incrementStrike: () => void;
   incrementBall: () => void;
@@ -49,6 +53,9 @@ export const usePitchGame = create<PitchGameState>((set, get) => ({
   currentStrikes: 0,
   strikePercentage: 0,
   ballPercentage: 0,
+  fbCount: 0,
+  cuCount: 0,
+  sfCount: 0,
   isTimerRunning: false,
   persistenceKey: GAME_STORAGE_KEY,
 
@@ -179,6 +186,9 @@ export const usePitchGame = create<PitchGameState>((set, get) => ({
       currentStrikes: 0,
       strikePercentage: 0,
       ballPercentage: 0,
+      fbCount: 0,
+      cuCount: 0,
+      sfCount: 0,
       isTimerRunning: false,
       gameStarted: undefined,
       lastTime: undefined,
@@ -201,6 +211,18 @@ export const usePitchGame = create<PitchGameState>((set, get) => ({
       return new Date();
     }
     return state.lastTime;
+  },
+
+  getFbCount() {
+    return get().fbCount;
+  },
+
+  getCuCount() {
+    return get().cuCount;
+  },
+
+  getSfCount() {
+    return get().sfCount;
   },
 
   exportToJson() {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, Modal, KeyboardAvoidingView, ScrollView } from 'react-native';
-import { useCounterManager } from '@/hooks/use-counter-manager';
+import { useCounterManager, ArbitraryCounter } from '@/hooks/use-counter-manager';
 import { CounterDisplay } from '@/components/ui/counter-display';
 
 export default function CountersScreen() {
@@ -52,6 +52,12 @@ export default function CountersScreen() {
     }
   };
 
+  const handleTapCounter = (counter: ArbitraryCounter) => {
+    if ((counter.count || 0) > 0) {
+      handleDecrement(counter.id);
+    }
+    handleIncrement(counter.id);
+  };
 
   return (
     <KeyboardAvoidingView
@@ -81,7 +87,10 @@ export default function CountersScreen() {
       {/* Counter List */}
       <ScrollView style={styles.list}>
         {counters.map((counter) => (
-          <View key={counter.id} style={styles.counterRow}>
+          <TouchableOpacity
+            key={counter.id}
+            style={[styles.counterRow, { backgroundColor: '#1a1a1a' }]}
+            onPress={() => handleTapCounter(counter)}>
             <View style={styles.counterName}>
               <Text style={styles.counterNameText}>{counter.name}</Text>
             </View>
@@ -120,7 +129,7 @@ export default function CountersScreen() {
                 <Text style={styles.actionIcon}>🗑️</Text>
               </TouchableOpacity>
             </View>
-          </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
 
