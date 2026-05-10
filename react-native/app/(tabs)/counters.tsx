@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, Alert, Modal, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { tapHaptic, actionHaptic, warningHaptic } from '@/utils/haptics';
 
 function showAlert(title: string, message: string, buttons?: { text: string; style?: string; onPress?: () => void }[]) {
   if (Platform.OS === 'web') {
@@ -62,10 +63,12 @@ export default function CountersScreen() {
   };
 
   const handleResetCounter = (id: string) => {
+    warningHaptic();
     useCounterManager.getState().resetCounter(id);
   };
 
   const handleIncrement = (id: string) => {
+    tapHaptic();
     useCounterManager.getState().incrementCounter(id);
   };
 
@@ -73,6 +76,7 @@ export default function CountersScreen() {
     const state = useCounterManager.getState();
     const counter = state.counters.find((c) => c.id === id);
     if ((counter?.count || 0) > 0) {
+      tapHaptic();
       useCounterManager.getState().decrementCounter(id);
     }
   };
@@ -164,24 +168,33 @@ export default function CountersScreen() {
               <TouchableOpacity
                 onPress={() => handleDecrement(counter.id)}
                 disabled={(counter.count || 0) === 0}
+                accessibilityRole="button"
+                accessibilityLabel={`Decrement ${counter.name}`}
+                accessibilityState={{ disabled: (counter.count || 0) === 0 }}
                 style={{ padding: 8, opacity: (counter.count || 0) === 0 ? 0.3 : 1 }}
               >
                 <MaterialIcons name="remove" size={22} color={textColor.primary} />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => handleIncrement(counter.id)}
+                accessibilityRole="button"
+                accessibilityLabel={`Increment ${counter.name}`}
                 style={{ padding: 8 }}
               >
                 <MaterialIcons name="add" size={22} color={textColor.primary} />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => handleResetCounter(counter.id)}
+                accessibilityRole="button"
+                accessibilityLabel={`Reset ${counter.name}`}
                 style={{ padding: 8 }}
               >
                 <MaterialIcons name="refresh" size={20} color={textColor.primary} />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => handleDeleteCounter(counter.id, counter.name)}
+                accessibilityRole="button"
+                accessibilityLabel={`Delete ${counter.name}`}
                 style={{ padding: 8 }}
               >
                 <MaterialIcons name="delete" size={20} color="#F44336" />
@@ -193,6 +206,8 @@ export default function CountersScreen() {
 
       {/* FAB - Add button */}
       <TouchableOpacity
+        accessibilityRole="button"
+        accessibilityLabel="Add a new counter"
         style={{
           position: 'absolute',
           bottom: 28,
@@ -209,7 +224,7 @@ export default function CountersScreen() {
           shadowOpacity: 0.3,
           shadowRadius: 4,
         }}
-        onPress={() => setShowAddModal(true)}
+        onPress={() => { actionHaptic(); setShowAddModal(true); }}
       >
         <Text style={{ fontSize: 20, color: '#FFFFFF', marginRight: 8 }}>+</Text>
         <Text style={{ fontSize: 16, color: '#FFFFFF', fontWeight: '600' }}>Add</Text>

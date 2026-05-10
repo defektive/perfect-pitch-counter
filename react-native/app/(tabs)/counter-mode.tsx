@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Modal, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Modal, Platform, Share } from 'react-native';
 import { useColorScheme } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import * as Clipboard from 'expo-clipboard';
 import { usePitchGame } from '@/hooks/use-pitch-game';
 import { Colors } from '@/constants/theme';
+import { tapHaptic, actionHaptic } from '@/utils/haptics';
 
 function Divider({ color }: { color: string }) {
   return <View style={{ height: 1, backgroundColor: color }} />;
@@ -13,15 +13,19 @@ function Divider({ color }: { color: string }) {
 function ListTileButton({
   onPress,
   children,
+  accessibilityLabel,
 }: {
   onPress: () => void;
   children: React.ReactNode;
+  accessibilityLabel?: string;
 }) {
   const colorScheme = useColorScheme();
   const backgroundColor = colorScheme === 'dark' ? '#111111' : '#eeeeee';
   return (
     <TouchableOpacity
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
       style={{
         paddingHorizontal: 20,
         paddingVertical: 10,
@@ -83,14 +87,17 @@ export default function CounterModeScreen() {
   const state = usePitchGame();
   const { totalStrikes, totalBalls, outCount, strikePercentage, ballPercentage } = state;
 
-  const copyToClipboard = async (text: string) => {
-    await Clipboard.setStringAsync(text);
+  const shareData = async (text: string, title: string) => {
     if (Platform.OS === 'web') {
-      window.alert('Data copied to clipboard!');
-    } else {
-      const { Alert } = require('react-native');
-      Alert.alert('Copied', 'Data copied to clipboard!');
+      try {
+        await navigator.clipboard.writeText(text);
+        window.alert(`${title} copied to clipboard!`);
+      } catch {
+        window.alert(text);
+      }
+      return;
     }
+    await Share.share({ message: text, title });
   };
 
   return (
@@ -102,7 +109,10 @@ export default function CounterModeScreen() {
             <Text style={{ fontSize: 16, color: textColor.primary }}>Strikes</Text>
             <Text style={{ fontSize: 13, color: textColor.secondary }}>Pitches in the strike zone</Text>
           </View>
-          <ListTileButton onPress={incrementStrike}>
+          <ListTileButton
+            onPress={() => { tapHaptic(); incrementStrike(); }}
+            accessibilityLabel={`Add strike, currently ${totalStrikes}`}
+          >
             <Text style={{ fontSize: 16, color: textColor.primary, fontWeight: '500' }}>{totalStrikes}</Text>
           </ListTileButton>
         </View>
@@ -113,7 +123,10 @@ export default function CounterModeScreen() {
             <Text style={{ fontSize: 16, color: textColor.primary }}>Balls</Text>
             <Text style={{ fontSize: 13, color: textColor.secondary }}>Pitches outside the strike zone</Text>
           </View>
-          <ListTileButton onPress={incrementBall}>
+          <ListTileButton
+            onPress={() => { tapHaptic(); incrementBall(); }}
+            accessibilityLabel={`Add ball, currently ${totalBalls}`}
+          >
             <Text style={{ fontSize: 16, color: textColor.primary, fontWeight: '500' }}>{totalBalls}</Text>
           </ListTileButton>
         </View>
@@ -142,7 +155,9 @@ export default function CounterModeScreen() {
 
       {/* FAB - Export button */}
       <TouchableOpacity
-        onPress={() => setShowExportModal(true)}
+        onPress={() => { actionHaptic(); setShowExportModal(true); }}
+        accessibilityRole="button"
+        accessibilityLabel="Export game data"
         style={{
           position: 'absolute',
           bottom: 28,
@@ -191,9 +206,12 @@ export default function CounterModeScreen() {
             {/* JSON option */}
             <TouchableOpacity
               onPress={() => {
-                copyToClipboard(exportToJson());
+                tapHaptic();
+                shareData(exportToJson(), 'Game data (JSON)');
                 setShowExportModal(false);
               }}
+              accessibilityRole="button"
+              accessibilityLabel="Share game data as JSON"
               style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 8 }}
             >
               <MaterialIcons name="description" size={20} color={textColor.primary} style={{ marginRight: 16 }} />
@@ -203,9 +221,12 @@ export default function CounterModeScreen() {
             {/* CSV option */}
             <TouchableOpacity
               onPress={() => {
-                copyToClipboard(exportToCsv());
+                tapHaptic();
+                shareData(exportToCsv(), 'Game data (CSV)');
                 setShowExportModal(false);
               }}
+              accessibilityRole="button"
+              accessibilityLabel="Share game data as CSV"
               style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 8 }}
             >
               <MaterialIcons name="table-chart" size={20} color={textColor.primary} style={{ marginRight: 16 }} />
@@ -214,15 +235,18 @@ export default function CounterModeScreen() {
 
             <View style={{ height: 8 }} />
 
-            {/* Copy All */}
+            {/* Share both */}
             <TouchableOpacity
               onPress={() => {
+                actionHaptic();
                 const json = exportToJson();
                 const csv = exportToCsv();
                 const text = `\n\n--- JSON ---\n${json}\n\n--- CSV ---\n${csv}`;
-                copyToClipboard(text);
+                shareData(text, 'Game data');
                 setShowExportModal(false);
               }}
+              accessibilityRole="button"
+              accessibilityLabel="Share game data in both formats"
               style={{
                 backgroundColor: mode === 'dark' ? Colors.dark.accent.primary : Colors.light.accent.primary,
                 paddingVertical: 12,
@@ -230,7 +254,7 @@ export default function CounterModeScreen() {
                 alignItems: 'center',
               }}
             >
-              <Text style={{ fontSize: 16, color: '#FFFFFF', fontWeight: '600' }}>Copy All</Text>
+              <Text style={{ fontSize: 16, color: '#FFFFFF', fontWeight: '600' }}>Share Both</Text>
             </TouchableOpacity>
 
             <View style={{ height: 20 }} />

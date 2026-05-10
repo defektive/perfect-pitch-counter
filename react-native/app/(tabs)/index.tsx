@@ -4,6 +4,7 @@ import { useColorScheme } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { usePitchGame } from '@/hooks/use-pitch-game';
 import { Colors } from '@/constants/theme';
+import { tapHaptic, actionHaptic, warningHaptic } from '@/utils/haptics';
 
 function formatDuration(ms: number): string {
   const totalSeconds = Math.floor(ms / 1000);
@@ -21,16 +22,20 @@ function ListTileButton({
   onPress,
   children,
   style,
+  accessibilityLabel,
 }: {
   onPress: () => void;
   children: React.ReactNode;
   style?: any;
+  accessibilityLabel?: string;
 }) {
   const colorScheme = useColorScheme();
   const backgroundColor = colorScheme === 'dark' ? '#111111' : '#eeeeee';
   return (
     <TouchableOpacity
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
       style={[{
         paddingHorizontal: 20,
         paddingVertical: 10,
@@ -123,7 +128,10 @@ export default function PitchGameScreen() {
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, minHeight: 56 }}>
         <Text style={{ flex: 1, fontSize: 16, color: textColor.primary }}>Practice time</Text>
         <Text style={{ fontSize: 15, color: textColor.primary, marginRight: 16 }}>{timerDisplay}</Text>
-        <ListTileButton onPress={toggleTimer}>
+        <ListTileButton
+          onPress={() => { actionHaptic(); toggleTimer(); }}
+          accessibilityLabel={isTimerRunning ? 'Stop practice timer' : 'Start practice timer'}
+        >
           <MaterialIcons
             name={isTimerRunning ? 'stop' : 'play-arrow'}
             size={20}
@@ -139,7 +147,10 @@ export default function PitchGameScreen() {
           <Text style={{ fontSize: 16, color: textColor.primary }}>Hits</Text>
           <Text style={{ fontSize: 13, color: textColor.secondary }}>Number of hits</Text>
         </View>
-        <ListTileButton onPress={incrementHit}>
+        <ListTileButton
+          onPress={() => { tapHaptic(); incrementHit(); }}
+          accessibilityLabel={`Add hit, currently ${hitsCount}`}
+        >
           <Text style={{ fontSize: 16, color: textColor.primary, fontWeight: '500' }}>{hitsCount}</Text>
         </ListTileButton>
       </View>
@@ -151,7 +162,10 @@ export default function PitchGameScreen() {
           <Text style={{ fontSize: 16, color: textColor.primary }}>Strikes</Text>
           <Text style={{ fontSize: 13, color: textColor.secondary }}>Pitches inside the strike zone</Text>
         </View>
-        <ListTileButton onPress={incrementStrike}>
+        <ListTileButton
+          onPress={() => { tapHaptic(); incrementStrike(); }}
+          accessibilityLabel={`Add strike, currently ${currentStrikes}`}
+        >
           <Text style={{ fontSize: 16, color: textColor.primary, fontWeight: '500' }}>{currentStrikes}</Text>
         </ListTileButton>
       </View>
@@ -163,7 +177,10 @@ export default function PitchGameScreen() {
           <Text style={{ fontSize: 16, color: textColor.primary }}>Balls</Text>
           <Text style={{ fontSize: 13, color: textColor.secondary }}>Pitches outside the strike zone</Text>
         </View>
-        <ListTileButton onPress={incrementBall}>
+        <ListTileButton
+          onPress={() => { tapHaptic(); incrementBall(); }}
+          accessibilityLabel={`Add ball, currently ${currentBalls}`}
+        >
           <Text style={{ fontSize: 16, color: textColor.primary, fontWeight: '500' }}>{currentBalls}</Text>
         </ListTileButton>
       </View>
@@ -246,7 +263,9 @@ export default function PitchGameScreen() {
           <Text style={{ fontSize: 13, color: textColor.secondary }}>Reset stats</Text>
         </View>
         <TouchableOpacity
-          onPress={resetCounters}
+          onPress={() => { warningHaptic(); resetCounters(); }}
+          accessibilityRole="button"
+          accessibilityLabel="Reset all stats"
           style={{
             paddingHorizontal: 24,
             paddingVertical: 12,

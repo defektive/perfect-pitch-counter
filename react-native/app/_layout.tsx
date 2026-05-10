@@ -2,6 +2,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
+import { Platform, StatusBar as RNStatusBar } from 'react-native';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -28,6 +29,8 @@ export default function RootLayout() {
           options={{
             title: 'Perfect Pitch Counter',
             headerShown: true,
+            headerStatusBarHeight:
+              Platform.OS === 'android' ? RNStatusBar.currentHeight ?? 24 : undefined,
           }}
         />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
