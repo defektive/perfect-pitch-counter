@@ -13,37 +13,35 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors.accent.primary,
+        tabBarActiveTintColor: Colors.tab.activeColor,
+        tabBarInactiveTintColor: mode === 'dark' ? Colors.dark.text.tertiary : Colors.light.text.tertiary,
         headerShown: false,
         tabBarStyle: {
           backgroundColor: mode === 'dark' ? Colors.dark.primary : Colors.light.primary,
           borderTopColor: mode === 'dark' ? Colors.dark.divider : Colors.light.divider,
           height: Platform.OS === 'ios' ? 89 : 65,
           paddingBottom: Platform.OS === 'ios' ? 29 : 12,
-          borderBottomWidth: 1,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 4,
-          elevation: 4,
         },
-        tabBarItemStyle: {},
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: '600',
-          color: mode === 'dark' ? Colors.dark.text.primary : Colors.light.text.primary,
         },
       }}>
       <Tabs.Screen
         name="index"
         options={{
           title: 'Game Mode',
-          tabBarIcon: ({ color, focused }) => (
-            <IconSymbol
-              size={focused ? 30 : 24}
-              name="baseball"
-              color={color}
-            />
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={24} name="baseball" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="counter-mode"
+        options={{
+          title: 'Counter Mode',
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={24} name="dashboard" color={color} />
           ),
         }}
       />
@@ -51,25 +49,8 @@ export default function TabLayout() {
         name="counters"
         options={{
           title: 'Counters',
-          tabBarIcon: ({ color, focused }) => (
-            <IconSymbol
-              size={focused ? 30 : 24}
-              name="list.bullet"
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="score"
-        options={{
-          title: 'Score',
-          tabBarIcon: ({ color, focused }) => (
-            <IconSymbol
-              size={focused ? 30 : 24}
-              name="star"
-              color={color}
-            />
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={24} name="list.bullet" color={color} />
           ),
         }}
       />
@@ -77,12 +58,8 @@ export default function TabLayout() {
         name="settings"
         options={{
           title: 'Settings',
-          tabBarIcon: ({ color, focused }) => (
-            <IconSymbol
-              size={focused ? 30 : 24}
-              name="gear"
-              color={color}
-            />
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={24} name="gear" color={color} />
           ),
         }}
       />

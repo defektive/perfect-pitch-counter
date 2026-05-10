@@ -19,6 +19,7 @@
     "@react-navigation/elements": "^2.1.9",
     "@react-navigation/native": "^7.0.14",
     "expo": "~53.0.10",
+    "expo-clipboard": "~7.1.5",
     "expo-constants": "~17.0.5",
     "expo-font": "~13.0.3",
     "expo-haptics": "~14.0.1",
@@ -30,7 +31,6 @@
     "expo-symbols": "~0.2.1",
     "expo-system-ui": "~5.0.7",
     "expo-web-browser": "~14.0.2",
-    "zustand": "^5.0.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "0.78.1",
@@ -38,10 +38,11 @@
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.3.0",
     "react-native-screens": "~4.10.0",
-    "react-native-web": "~0.20.0"
+    "react-native-web": "~0.20.0",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
-      "@types/react": "~19.1.0",
+    "@types/react": "~19.1.0",
     "typescript": "~5.8.3",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",

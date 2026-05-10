@@ -1,276 +1,258 @@
-import React, { useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useColorScheme } from 'react-native';
 import { usePitchGame } from '@/hooks/use-pitch-game';
-import { CounterDisplay } from '@/components/ui/counter-display';
-import { Button } from '@/components/ui/button';
-import { Typography, Spacing, Colors } from '@/constants/theme';
+import { Colors } from '@/constants/theme';
 
-type StatsRowProps = {
-  title: string;
-  value: string | number;
-  subtitle?: string;
-};
+function formatDuration(ms: number): string {
+  const totalSeconds = Math.floor(ms / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
 
-const StatsRow: React.FC<StatsRowProps> = ({ title, value, subtitle }) => {
-  const colorScheme = useColorScheme();
-  const mode = colorScheme ?? 'light';
-  const textColor = mode === 'dark' ? Colors.dark.text : Colors.light.text;
-  const cardColor = mode === 'dark' ? Colors.dark.primary : Colors.light.primary;
+function Divider({ color }: { color: string }) {
+  return <View style={{ height: 1, backgroundColor: color }} />;
+}
 
-  return (
-    <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        backgroundColor: cardColor,
-        paddingVertical: 12,
-        paddingHorizontal: 16,
-        borderRadius: 12,
-        marginBottom: 8,
-        minHeight: 56,
-      }}>
-      <View style={{ flex: 1, paddingRight: 16 }}>
-        <Text style={{ fontSize: 12, color: textColor.secondary, textTransform: 'uppercase', marginBottom: 4, letterSpacing: 0.5 }}>
-          {title}
-        </Text>
-        <Text style={{ fontSize: 28, fontWeight: 'bold', color: textColor.primary }}>
-          {value}
-        </Text>
-      </View>
-      {subtitle && (
-        <View style={{ width: 64, alignItems: 'flex-end' }}>
-          <CounterDisplay count={Number(subtitle)} subtitle="" />
-        </View>
-      )}
-    </View>
-  );
-};
-
-const CounterRow: React.FC<{
-  title: string;
-  current: number;
-  total: number;
+function ListTileButton({
+  onPress,
+  children,
+  style,
+}: {
   onPress: () => void;
-  hasTotal?: boolean;
-}> = ({ title, current, total, onPress, hasTotal }) => {
-  const colorScheme = useColorScheme();
-  const mode = colorScheme ?? 'light';
-  const textColor = mode === 'dark' ? Colors.dark.text : Colors.light.text;
-  const cardColor = mode === 'dark' ? Colors.dark.primary : Colors.light.primary;
-
+  children: React.ReactNode;
+  style?: any;
+}) {
   return (
     <TouchableOpacity
       onPress={onPress}
-      activeOpacity={0.75}
-      accessibilityState={{ selected: current > 0 }}
-      accessibilityLabel={`Increment ${title}, currently at ${current}`}
-      accessibilityRole="button"
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: cardColor,
-        paddingVertical: 16,
+      style={[{
         paddingHorizontal: 20,
-        borderRadius: 16,
-        marginBottom: 10,
-        minHeight: 64,
-      }}>
-      <View style={{ flex: 1, paddingRight: 16 }}>
-        <Text style={{ fontSize: 18, fontWeight: '700', color: textColor.primary, marginBottom: 4 }}>
-          {title}
-        </Text>
-        {hasTotal && (
-          <Text style={{ fontSize: 11, color: textColor.secondary, textAlign: 'right' }}>
-            {current} / {total}
-          </Text>
-        )}
-      </View>
-      <View
-        style={{
-          width: 72,
-          height: 72,
-          borderRadius: 36,
-          backgroundColor: mode === 'dark' ? Colors.dark.elevated : Colors.light.elevated,
-          borderWidth: 2,
-          borderColor: mode === 'dark' ? Colors.dark.divider : Colors.light.divider,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <CounterDisplay count={current} title={title} />
-      </View>
+        paddingVertical: 10,
+        borderRadius: 20,
+        backgroundColor: 'rgba(128,128,128,0.15)',
+        elevation: 1,
+        minWidth: 48,
+        alignItems: 'center',
+      }, style]}
+    >
+      {children}
     </TouchableOpacity>
   );
-};
+}
 
-export default function PitchCounterScreen() {
+function CircleAvatar({
+  value,
+  textColor,
+}: {
+  value: string | number;
+  textColor: string;
+}) {
   const colorScheme = useColorScheme();
   const mode = colorScheme ?? 'light';
+  return (
+    <View
+      style={{
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: mode === 'dark' ? Colors.dark.accent.primary : Colors.light.accent.primary,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: '600' }}>
+        {value}
+      </Text>
+    </View>
+  );
+}
+
+export default function PitchGameScreen() {
+  const colorScheme = useColorScheme();
+  const mode = colorScheme ?? 'light';
+  const textColor = mode === 'dark' ? Colors.dark.text : Colors.light.text;
+  const backgroundColor = mode === 'dark' ? Colors.dark.background : Colors.light.background;
+  const dividerColor = mode === 'dark' ? Colors.dark.divider : Colors.light.divider;
 
   const {
     incrementStrike,
     incrementBall,
     incrementHit,
-    exportToJson,
-    exportToCsv,
+    resetCounters,
+    toggleTimer,
   } = usePitchGame();
 
-  const getBatters = () => usePitchGame.getState().outCount + usePitchGame.getState().hitCount + usePitchGame.getState().walkCount;
-  const getRuns = () => Math.max(0, (usePitchGame.getState().hitCount + usePitchGame.getState().walkCount) - 3);
-  const getStrikePercentage = () => {
-    const total = usePitchGame.getState().totalBalls + usePitchGame.getState().totalStrikes;
-    return total > 0 ? Math.round((usePitchGame.getState().totalStrikes / total) * 100) : 0;
-  };
-  const getBallPercentage = () => {
-    const total = usePitchGame.getState().totalBalls + usePitchGame.getState().totalStrikes;
-    return total > 0 ? Math.round((usePitchGame.getState().totalBalls / total) * 100) : 0;
-  };
+  const state = usePitchGame();
+  const { currentStrikes, currentBalls, hitCount: hitsCount, outCount, walkCount, totalStrikes, totalBalls, isTimerRunning, gameStarted } = state;
 
-  const backgroundColor = mode === 'dark' ? Colors.dark.primary : Colors.light.card;
-  const cardColor = mode === 'dark' ? Colors.dark.primary : Colors.light.primary;
-  const dividerColor = mode === 'dark' ? Colors.dark.divider : Colors.light.divider;
-  const textColor = mode === 'dark' ? Colors.dark.text : Colors.light.text;
-  const accentColor = mode === 'dark' ? Colors.dark.accent : Colors.light.accent;
+  const batterCount = outCount + hitsCount + walkCount;
+  const onBase = walkCount + hitsCount;
+  const runCount = Math.max(0, onBase - 3);
+  const totalPitches = totalBalls + totalStrikes + hitsCount;
 
-  const handleExport = useCallback(() => {
-    console.log('Export JSON:', exportToJson());
-    console.log('Export CSV:', exportToCsv());
-  }, [exportToJson, exportToCsv]);
+  // Timer display
+  const [elapsed, setElapsed] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (isTimerRunning && gameStarted) {
+      const start = new Date(gameStarted).getTime();
+      const tick = () => setElapsed(Date.now() - start);
+      tick();
+      intervalRef.current = setInterval(tick, 1000);
+      return () => {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+      };
+    } else {
+      setElapsed(0);
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    }
+  }, [isTimerRunning, gameStarted]);
+
+  const timerDisplay = isTimerRunning ? formatDuration(elapsed) : '00:00:00';
 
   return (
-    <View style={{ flex: 1, backgroundColor, paddingHorizontal: 4 }}>
-      {/* Header */}
-      <View style={{ alignItems: 'center', paddingTop: 20, paddingBottom: 16 }}>
-        <Text style={{ fontSize: 24, fontWeight: 'bold', color: textColor.primary }}>
-          Pitch Counter
-        </Text>
-        <Text style={{ fontSize: 13, color: textColor.secondary, marginTop: 4 }}>
-          Track your game statistics
-        </Text>
+    <ScrollView style={{ flex: 1, backgroundColor }}>
+      {/* Practice Timer */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, minHeight: 56 }}>
+        <Text style={{ flex: 1, fontSize: 16, color: textColor.primary }}>Practice time</Text>
+        <Text style={{ fontSize: 15, color: textColor.primary, marginRight: 16 }}>{timerDisplay}</Text>
+        <ListTileButton onPress={toggleTimer}>
+          <Text style={{ fontSize: 18, color: textColor.primary }}>
+            {isTimerRunning ? '⏹' : '▶'}
+          </Text>
+        </ListTileButton>
       </View>
+      <Divider color={dividerColor} />
 
-      {/* Main Counter Section */}
-      <View style={{ paddingVertical: 8 }}>
-        <Text
+      {/* Hits */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, minHeight: 64 }}>
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 16, color: textColor.primary }}>Hits</Text>
+          <Text style={{ fontSize: 13, color: textColor.secondary }}>Number of hits</Text>
+        </View>
+        <ListTileButton onPress={incrementHit}>
+          <Text style={{ fontSize: 16, color: textColor.primary, fontWeight: '500' }}>{hitsCount}</Text>
+        </ListTileButton>
+      </View>
+      <Divider color={dividerColor} />
+
+      {/* Strikes */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, minHeight: 64 }}>
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 16, color: textColor.primary }}>Strikes</Text>
+          <Text style={{ fontSize: 13, color: textColor.secondary }}>Pitches inside the strike zone</Text>
+        </View>
+        <ListTileButton onPress={incrementStrike}>
+          <Text style={{ fontSize: 16, color: textColor.primary, fontWeight: '500' }}>{currentStrikes}</Text>
+        </ListTileButton>
+      </View>
+      <Divider color={dividerColor} />
+
+      {/* Balls */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, minHeight: 64 }}>
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 16, color: textColor.primary }}>Balls</Text>
+          <Text style={{ fontSize: 13, color: textColor.secondary }}>Pitches outside the strike zone</Text>
+        </View>
+        <ListTileButton onPress={incrementBall}>
+          <Text style={{ fontSize: 16, color: textColor.primary, fontWeight: '500' }}>{currentBalls}</Text>
+        </ListTileButton>
+      </View>
+      <Divider color={dividerColor} />
+
+      {/* Batters (read-only) */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, minHeight: 64 }}>
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 16, color: textColor.primary }}>Batters</Text>
+          <Text style={{ fontSize: 13, color: textColor.secondary }}>Number of batters</Text>
+        </View>
+        <CircleAvatar value={batterCount} textColor={textColor.primary} />
+      </View>
+      <Divider color={dividerColor} />
+
+      {/* Outs */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, minHeight: 64 }}>
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 16, color: textColor.primary }}>Outs</Text>
+          <Text style={{ fontSize: 13, color: textColor.secondary }}>Number of outs</Text>
+        </View>
+        <CircleAvatar value={outCount} textColor={textColor.primary} />
+      </View>
+      <Divider color={dividerColor} />
+
+      {/* Walks */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, minHeight: 64 }}>
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 16, color: textColor.primary }}>Walks</Text>
+          <Text style={{ fontSize: 13, color: textColor.secondary }}>Number of walks</Text>
+        </View>
+        <CircleAvatar value={walkCount} textColor={textColor.primary} />
+      </View>
+      <Divider color={dividerColor} />
+
+      {/* Runs */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, minHeight: 64 }}>
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 16, color: textColor.primary }}>Runs</Text>
+          <Text style={{ fontSize: 13, color: textColor.secondary }}>Number of runs</Text>
+        </View>
+        <CircleAvatar value={runCount} textColor={textColor.primary} />
+      </View>
+      <Divider color={dividerColor} />
+
+      {/* Total Strikes */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, minHeight: 64 }}>
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 16, color: textColor.primary }}>Strikes</Text>
+          <Text style={{ fontSize: 13, color: textColor.secondary }}>Number of strikes</Text>
+        </View>
+        <CircleAvatar value={totalStrikes} textColor={textColor.primary} />
+      </View>
+      <Divider color={dividerColor} />
+
+      {/* Total Balls */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, minHeight: 64 }}>
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 16, color: textColor.primary }}>Balls</Text>
+          <Text style={{ fontSize: 13, color: textColor.secondary }}>Number of balls</Text>
+        </View>
+        <CircleAvatar value={totalBalls} textColor={textColor.primary} />
+      </View>
+      <Divider color={dividerColor} />
+
+      {/* Total Pitches */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, minHeight: 64 }}>
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 16, color: textColor.primary }}>Pitches</Text>
+          <Text style={{ fontSize: 13, color: textColor.secondary }}>Number of pitches</Text>
+        </View>
+        <CircleAvatar value={totalPitches} textColor={textColor.primary} />
+      </View>
+      <Divider color={dividerColor} />
+
+      {/* Reset */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, minHeight: 64 }}>
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 16, color: textColor.primary }}>Reset</Text>
+          <Text style={{ fontSize: 13, color: textColor.secondary }}>Reset stats</Text>
+        </View>
+        <TouchableOpacity
+          onPress={resetCounters}
           style={{
-            fontSize: 13,
-            fontWeight: '600',
-            color: textColor.secondary,
-            textTransform: 'uppercase',
-            paddingHorizontal: 4,
-            marginBottom: 12,
-            letterSpacing: 0.5,
-          }}>
-          Live Counters
-        </Text>
-
-        <CounterRow
-          title="Strikes"
-          current={usePitchGame.getState().currentStrikes}
-          total={usePitchGame.getState().totalStrikes}
-          onPress={incrementStrike}
-          hasTotal
-        />
-        <CounterRow
-          title="Balls"
-          current={usePitchGame.getState().currentBalls}
-          total={usePitchGame.getState().totalBalls}
-          onPress={incrementBall}
-          hasTotal
-        />
-        <CounterRow
-          title="Hits"
-          current={usePitchGame.getState().hitCount}
-          total={usePitchGame.getState().hitCount}
-          onPress={incrementHit}
-          hasTotal
-        />
+            paddingHorizontal: 24,
+            paddingVertical: 12,
+            borderRadius: 8,
+            backgroundColor: '#F44336',
+          }}
+        >
+          <Text style={{ fontSize: 18, color: '#FFFFFF' }}>↻</Text>
+        </TouchableOpacity>
       </View>
-
-      {/* Divider */}
-      <View style={{ height: 8, backgroundColor: dividerColor, borderRadius: 4, marginTop: 12 }} />
-
-      {/* Game Stats Section */}
-      <View style={{ paddingVertical: 8 }}>
-        <Text
-          style={{
-            fontSize: 13,
-            fontWeight: '600',
-            color: textColor.secondary,
-            textTransform: 'uppercase',
-            paddingHorizontal: 4,
-            marginBottom: 12,
-            letterSpacing: 0.5,
-          }}>
-          Game Stats
-        </Text>
-
-        <View style={{ flexDirection: 'row', marginBottom: 8 }}>
-          <View style={{ flex: 1, marginRight: 8 }}>
-            <StatsRow title="Batters" value={getBatters()} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <StatsRow title="Outs" value={usePitchGame.getState().outCount} />
-          </View>
-        </View>
-
-        <View style={{ flexDirection: 'row', marginBottom: 8 }}>
-          <View style={{ flex: 1, marginRight: 8 }}>
-            <StatsRow title="Walks" value={usePitchGame.getState().walkCount} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <StatsRow title="Runs" value={getRuns()} />
-          </View>
-        </View>
-
-        <View style={{ flexDirection: 'row', marginBottom: 8 }}>
-          <View style={{ flex: 1, marginRight: 8 }}>
-            <StatsRow title="Total Strikes" value={usePitchGame.getState().totalStrikes} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <StatsRow title="Total Balls" value={usePitchGame.getState().totalBalls} />
-          </View>
-        </View>
-
-        <View style={{ flexDirection: 'row', marginBottom: 8 }}>
-          <View style={{ flex: 1, marginRight: 8 }}>
-            <StatsRow title="Strike %" value={`${getStrikePercentage()}%`} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <StatsRow title="Ball %" value={`${getBallPercentage()}%`} />
-          </View>
-        </View>
-
-        <View style={{ flexDirection: 'row' }}>
-          <View style={{ flex: 1, marginRight: 8 }}>
-            <StatsRow title="Total Pitches" value={usePitchGame.getState().totalBalls + usePitchGame.getState().totalStrikes + usePitchGame.getState().hitCount} />
-          </View>
-        </View>
-      </View>
-
-      {/* Divider */}
-      <View style={{ height: 8, backgroundColor: dividerColor, borderRadius: 4, marginTop: 8 }} />
-
-      {/* Action Buttons */}
-      <View style={{ paddingVertical: 16 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Button
-            title="Reset All"
-            onPress={() => usePitchGame.getState().resetCounters()}
-            variant="secondary"
-            style={{ flex: 1, marginRight: 8, height: 44 }}
-            accessibilityLabel="Reset all counters"
-          />
-          <Button
-            title="Export"
-            onPress={handleExport}
-            variant="ghost"
-            style={{ flex: 1, height: 44 }}
-            accessibilityLabel="Export game data"
-          />
-        </View>
-      </View>
-    </View>
+      <Divider color={dividerColor} />
+    </ScrollView>
   );
 }

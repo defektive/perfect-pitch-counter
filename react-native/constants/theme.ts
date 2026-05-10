@@ -27,6 +27,7 @@ export const Colors = {
       secondary: '#888888',      // Secondary text
       tertiary: '#666666',       // Tertiary text (labels, subtitles)
       muted: '#444444',          // Muted/muted content
+      error: '#F44336',          // Error text
     },
     button: {
       primary: '#1976D2',        // Main action button
@@ -61,22 +62,23 @@ export const Colors = {
       error: '#F44336',          // Red for errors
     },
     text: {
-      primary: '#FFFFFF',        // Main text (dark mode)
+      primary: '#111111',        // Main text (light mode)
       primaryLight: '#111111',   // Main text (light mode)
-      secondary: '#888888',      // Secondary text
-      tertiary: '#666666',       // Tertiary text (labels, subtitles)
-      muted: '#444444',          // Muted/muted content
+      secondary: '#666666',      // Secondary text
+      tertiary: '#888888',       // Tertiary text (labels, subtitles)
+      muted: '#AAAAAA',          // Muted content
+      error: '#F44336',          // Error text
     },
     button: {
       primary: '#1976D2',        // Main action button
       primaryText: '#FFFFFF',
-      secondary: '#444444',      // Secondary action
-      secondaryText: '#FFFFFF',
+      secondary: '#E0E0E0',     // Secondary action
+      secondaryText: '#333333',
       ghost: '#1976D2',          // Ghost button accent
     },
     icon: {
-      default: '#9BA1A6',
-      selected: '#FFFFFF',
+      default: '#757575',
+      selected: '#111111',
       accent: '#1976D2',
       error: '#F44336',
     },
@@ -89,6 +91,11 @@ export const Colors = {
     secondary: '#888888',      // Secondary text
     tertiary: '#666666',       // Tertiary text (labels, subtitles)
     muted: '#444444',          // Muted/muted content
+  },
+
+  // Tab bar
+  tab: {
+    activeColor: '#FF8F00',    // Amber[800] - matches Flutter selectedItemColor
   },
 
   // Accent colors

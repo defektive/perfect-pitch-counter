@@ -10,7 +10,8 @@ type MaterialIconName =
   | 'send'
   | 'code'
   | 'chevron-right'
-  | 'sports-tennis'
+  | 'sports-baseball'
+  | 'dashboard'
   | 'format-list-bulleted'
   | 'settings'
   | 'check'
@@ -35,7 +36,8 @@ const MAPPING: Record<string, MaterialIconName> = {
   'paperplane.fill': 'send',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
-  'baseball': 'sports-tennis',
+  'baseball': 'sports-baseball',
+  'dashboard': 'dashboard',
   'list': 'format-list-bulleted',
   'list.bullet': 'format-list-bulleted',
   'gear': 'settings',
