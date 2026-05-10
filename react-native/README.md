@@ -21,7 +21,7 @@ React Native (Expo) port of the Flutter Perfect Pitch Counter app. Tracks baseba
 
 - [Node.js 20+](https://nodejs.org/)
 - [Expo CLI](https://docs.expo.dev/)
-- For Android builds: [Java JDK 17](https://adoptium.net/)
+- For Android builds: [Java JDK 17](https://adoptium.net/), [Android SDK](https://developer.android.com/studio) with build-tools and a platform installed
 - For iOS builds: [Xcode 15+](https://developer.apple.com/xcode/) (macOS only)
 
 ## Getting Started
@@ -35,13 +35,34 @@ Press `w` for web, `a` for Android emulator, `i` for iOS simulator.
 
 ## Building
 
-```bash
-# Web
-npx expo export --platform web
+### Web
 
-# Android
-npx expo export --platform android
+```bash
+npx expo export --platform web
 ```
+
+### Android APK
+
+1. Generate the native Android project (only needed once, or after changing `app.json`):
+
+```bash
+npx expo prebuild --platform android
+```
+
+2. Build the debug APK:
+
+```bash
+JAVA_HOME=/usr/lib/jvm/java-17-openjdk ANDROID_HOME=~/Android/Sdk \
+  ./android/gradlew -p ./android assembleDebug
+```
+
+The APK will be at `android/app/build/outputs/apk/debug/app-debug.apk`.
+
+For a release build, use `assembleRelease` instead (requires signing config).
+
+> **Note:** If the prebuild generates an `enableBundleCompression` line in
+> `android/app/build.gradle` that causes a build error, remove it — this is a
+> known version mismatch between Expo prebuild and React Native 0.78.
 
 ## Project Structure
 

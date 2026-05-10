@@ -38,6 +38,43 @@ jobs:
         run: |
           flutter analyze
 
-      - name: Build Debug APK (no signing keys required)
+      - name: Build Flutter Debug APK
         run: |
           flutter build apk --debug
+
+  build_react_native_android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set Up JDK
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+        with:
+          java-version: 17
+          distribution: temurin
+
+      - name: Set Up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: react-native/package-lock.json
+
+      - name: Install Dependencies
+        working-directory: react-native
+        run: npm ci
+
+      - name: Generate Android Project
+        working-directory: react-native
+        run: npx expo prebuild --platform android --clean
+
+      - name: Remove unsupported enableBundleCompression
+        working-directory: react-native
+        run: sed -i '/enableBundleCompression/d' android/app/build.gradle
+
+      - name: Build React Native Debug APK
+        working-directory: react-native
+        run: |
+          cd android
+          ./gradlew assembleDebug
