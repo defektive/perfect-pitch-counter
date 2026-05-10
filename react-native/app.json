@@ -45,14 +45,12 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "./plugins/with-gradle-jvm-args"
     ],
     "experiments": {
       "typedRoutes": true
     },
-    "runtimeVersion": {
-      "policy": "include",
-      "version": "1.0.0"
-    }
+    "runtimeVersion": "1.0.0"
   }
 }

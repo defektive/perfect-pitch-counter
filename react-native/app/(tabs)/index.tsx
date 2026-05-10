@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useColorScheme } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { usePitchGame } from '@/hooks/use-pitch-game';
 import { Colors } from '@/constants/theme';
 
@@ -25,6 +26,8 @@ function ListTileButton({
   children: React.ReactNode;
   style?: any;
 }) {
+  const colorScheme = useColorScheme();
+  const backgroundColor = colorScheme === 'dark' ? '#111111' : '#eeeeee';
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -32,7 +35,7 @@ function ListTileButton({
         paddingHorizontal: 20,
         paddingVertical: 10,
         borderRadius: 20,
-        backgroundColor: 'rgba(128,128,128,0.15)',
+        backgroundColor,
         elevation: 1,
         minWidth: 48,
         alignItems: 'center',
@@ -121,9 +124,11 @@ export default function PitchGameScreen() {
         <Text style={{ flex: 1, fontSize: 16, color: textColor.primary }}>Practice time</Text>
         <Text style={{ fontSize: 15, color: textColor.primary, marginRight: 16 }}>{timerDisplay}</Text>
         <ListTileButton onPress={toggleTimer}>
-          <Text style={{ fontSize: 18, color: textColor.primary }}>
-            {isTimerRunning ? '⏹' : '▶'}
-          </Text>
+          <MaterialIcons
+            name={isTimerRunning ? 'stop' : 'play-arrow'}
+            size={20}
+            color={textColor.primary}
+          />
         </ListTileButton>
       </View>
       <Divider color={dividerColor} />
@@ -249,7 +254,7 @@ export default function PitchGameScreen() {
             backgroundColor: '#F44336',
           }}
         >
-          <Text style={{ fontSize: 18, color: '#FFFFFF' }}>↻</Text>
+          <MaterialIcons name="refresh" size={20} color="#FFFFFF" />
         </TouchableOpacity>
       </View>
       <Divider color={dividerColor} />

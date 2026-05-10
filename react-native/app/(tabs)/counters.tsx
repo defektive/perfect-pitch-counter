@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, Alert, Modal, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 
 function showAlert(title: string, message: string, buttons?: { text: string; style?: string; onPress?: () => void }[]) {
   if (Platform.OS === 'web') {
@@ -90,12 +91,12 @@ export default function CountersScreen() {
         <View
           style={{
             padding: 16,
-            backgroundColor: accentColor.primaryLight,
+            backgroundColor: mode === 'dark' ? Colors.dark.elevated : accentColor.primaryLight,
             borderBottomLeftRadius: 16,
             borderBottomRightRadius: 16,
           }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ fontSize: 28, marginRight: 12 }}>📈</Text>
+            <MaterialIcons name="trending-up" size={28} color={accentColor.primary} style={{ marginRight: 12 }} />
             <View style={{ flex: 1 }}>
               <Text style={{ fontSize: 12, color: textColor.secondary }}>
                 Most Used Counter
@@ -165,25 +166,25 @@ export default function CountersScreen() {
                 disabled={(counter.count || 0) === 0}
                 style={{ padding: 8, opacity: (counter.count || 0) === 0 ? 0.3 : 1 }}
               >
-                <Text style={{ fontSize: 22, color: textColor.primary }}>−</Text>
+                <MaterialIcons name="remove" size={22} color={textColor.primary} />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => handleIncrement(counter.id)}
                 style={{ padding: 8 }}
               >
-                <Text style={{ fontSize: 22, color: textColor.primary }}>+</Text>
+                <MaterialIcons name="add" size={22} color={textColor.primary} />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => handleResetCounter(counter.id)}
                 style={{ padding: 8 }}
               >
-                <Text style={{ fontSize: 20, color: textColor.primary }}>↻</Text>
+                <MaterialIcons name="refresh" size={20} color={textColor.primary} />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => handleDeleteCounter(counter.id, counter.name)}
                 style={{ padding: 8 }}
               >
-                <Text style={{ fontSize: 20, color: '#F44336' }}>🗑</Text>
+                <MaterialIcons name="delete" size={20} color="#F44336" />
               </TouchableOpacity>
             </View>
           </View>

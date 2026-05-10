@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Modal, Platform } from 'react-native';
 import { useColorScheme } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import { usePitchGame } from '@/hooks/use-pitch-game';
 import { Colors } from '@/constants/theme';
@@ -16,6 +17,8 @@ function ListTileButton({
   onPress: () => void;
   children: React.ReactNode;
 }) {
+  const colorScheme = useColorScheme();
+  const backgroundColor = colorScheme === 'dark' ? '#111111' : '#eeeeee';
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -23,7 +26,7 @@ function ListTileButton({
         paddingHorizontal: 20,
         paddingVertical: 10,
         borderRadius: 20,
-        backgroundColor: 'rgba(128,128,128,0.15)',
+        backgroundColor,
         elevation: 1,
         minWidth: 48,
         alignItems: 'center',
@@ -157,7 +160,7 @@ export default function CounterModeScreen() {
           shadowRadius: 4,
         }}
       >
-        <Text style={{ fontSize: 24, color: '#FFFFFF' }}>⬇</Text>
+        <MaterialIcons name="file-download" size={24} color="#FFFFFF" />
       </TouchableOpacity>
 
       {/* Export Bottom Sheet Modal */}
@@ -193,7 +196,7 @@ export default function CounterModeScreen() {
               }}
               style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 8 }}
             >
-              <Text style={{ fontSize: 20, marginRight: 16 }}>📄</Text>
+              <MaterialIcons name="description" size={20} color={textColor.primary} style={{ marginRight: 16 }} />
               <Text style={{ fontSize: 16, color: textColor.primary }}>JSON</Text>
             </TouchableOpacity>
 
@@ -205,7 +208,7 @@ export default function CounterModeScreen() {
               }}
               style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 8 }}
             >
-              <Text style={{ fontSize: 20, marginRight: 16 }}>📊</Text>
+              <MaterialIcons name="table-chart" size={20} color={textColor.primary} style={{ marginRight: 16 }} />
               <Text style={{ fontSize: 16, color: textColor.primary }}>CSV</Text>
             </TouchableOpacity>
 

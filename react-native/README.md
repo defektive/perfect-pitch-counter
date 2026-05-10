@@ -64,6 +64,64 @@ For a release build, use `assembleRelease` instead (requires signing config).
 > `android/app/build.gradle` that causes a build error, remove it — this is a
 > known version mismatch between Expo prebuild and React Native 0.78.
 
+### Android App Bundle (AAB) — for Google Play
+
+Google Play requires an AAB (App Bundle), not an APK. The native Android
+project produced by `expo prebuild` builds AABs via Gradle's `bundle*` tasks.
+
+#### Debug AAB (sanity check, unsigned)
+
+```bash
+JAVA_HOME=/usr/lib/jvm/java-17-openjdk ANDROID_HOME=~/Android/Sdk \
+  ./android/gradlew -p ./android bundleDebug
+```
+
+Output: `android/app/build/outputs/bundle/debug/app-debug.aab`
+
+A debug AAB is **not** uploadable to Play — it's signed with the debug
+keystore. Use it only to verify the bundle build works.
+
+#### Release AAB (signed, for Play Store upload)
+
+1. Create an upload keystore once and store it somewhere safe (back it up — if
+   you lose it, you cannot publish updates to the same Play listing):
+
+   ```bash
+   keytool -genkey -v -keystore upload.keystore -alias upload \
+     -keyalg RSA -keysize 2048 -validity 10000
+   ```
+
+2. Build the release bundle, passing the keystore as Gradle properties so
+   nothing gets committed:
+
+   ```bash
+   JAVA_HOME=/usr/lib/jvm/java-17-openjdk ANDROID_HOME=~/Android/Sdk \
+     ./android/gradlew -p ./android bundleRelease \
+     -Pandroid.injected.signing.store.file=/absolute/path/to/upload.keystore \
+     -Pandroid.injected.signing.store.password=STORE_PASS \
+     -Pandroid.injected.signing.key.alias=upload \
+     -Pandroid.injected.signing.key.password=KEY_PASS
+   ```
+
+   Output: `android/app/build/outputs/bundle/release/app-release.aab`
+
+3. Bump `expo.android.versionCode` in `app.json` before each Play upload —
+   Play rejects bundles with a versionCode it has already seen.
+
+4. Upload the `.aab` in Play Console → your app → Internal testing (or your
+   chosen track) → Create new release → upload bundle.
+
+> If you already have Play App Signing enabled on the listing, the keystore
+> above is your **upload** key — Google re-signs the bundle with the app key
+> on their side.
+>
+> If the `-P` flags don't take effect (you'll see the AAB signed with
+> `debug.keystore` instead), open `android/app/build.gradle` and confirm the
+> `release` build type's `signingConfig` is not pinned to the debug
+> `signingConfigs.debug`. Replace it with `signingConfigs.release` and set the
+> release config from environment variables or a gitignored
+> `gradle.properties` file.
+
 ## Project Structure
 
 ```
