@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Modal, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Modal, Platform } from 'react-native';
 import { useColorScheme } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { usePitchGame } from '@/hooks/use-pitch-game';
@@ -82,7 +82,12 @@ export default function CounterModeScreen() {
 
   const copyToClipboard = async (text: string) => {
     await Clipboard.setStringAsync(text);
-    Alert.alert('Copied', 'Data copied to clipboard!');
+    if (Platform.OS === 'web') {
+      window.alert('Data copied to clipboard!');
+    } else {
+      const { Alert } = require('react-native');
+      Alert.alert('Copied', 'Data copied to clipboard!');
+    }
   };
 
   return (

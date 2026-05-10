@@ -1,40 +1,32 @@
-# Pitch Counter
+# Perfect Pitch Counter
 
-A simple Flutter app to track baseball pitching sessions and manage arbitrary counters.
+A baseball/softball pitch tracking app with custom counters. Available as both a Flutter app and a React Native (Expo) app.
 
 ## Features
 
-- **Pitch Tracking**
-  - Track balls, strikes, walks, and hitters
-  - Ball, strike, walk, and hitter counters
-  - Pitch count and game innings
+- **Game Mode** — Full game tracking with practice timer, hits, strikes, balls, auto-outs (3 strikes), auto-walks (4 balls), and computed stats (batters, outs, walks, runs, total pitches)
+- **Counter Mode** — Quick pitch tracking with strike/ball buttons, out count, percentage stats, and data export (JSON, CSV, clipboard)
+- **Custom Counters** — Create unlimited named counters with increment/decrement/reset, usage stats, most-used highlight, and persistent storage
+- **Settings** — App name, version, and build info display
+- **Dark/Light mode** — Follows system theme
+- **Data persistence** — Game state and counters saved locally
 
-- **Arbitrary Counters**
-  - Add custom counters for any need
-  - Usage statistics (total increments, last used)
-  - Most used counter highlight
-  - Counter names with unique IDs
-  - Duplicate name protection (case-insensitive)
-  - Name validation (max 50 characters)
+## Platforms
 
-- **Counter Actions**
-  - Increment, decrement, reset counters
-  - Visual indication for used/unused counters
-  - Delete and remove counters
+| Platform | Framework | Directory |
+|----------|-----------|-----------|
+| Android, iOS, Linux, Web | Flutter | `./` (root) |
+| Android, iOS, Web | React Native (Expo) | `./react-native/` |
 
-- **Session Management**
-  - Ball, strike, walk, hitter tracking
-  - Walk, hitter, pitch limit tracking
-  - Full out/innings tracking
+Both apps share the same layout, functionality, and data models.
 
-## Setup
+## Flutter App
 
 ### Prerequisites
 
 - [Flutter SDK](https://docs.flutter.dev/get-started/install)
-- Android Studio (for Android builds)
 
-### Installation
+### Run
 
 ```bash
 flutter pub get
@@ -43,74 +35,61 @@ flutter run
 
 ### Build
 
-#### Android
-
 ```bash
+# Android
 flutter build apk --release
-```
 
-#### Web
-
-```bash
+# Web
 flutter run -d chrome
-```
 
-#### Linux
-
-```bash
+# Linux
 flutter build linux --release
 ```
 
-## Usage
+## React Native App
 
-### Adding a Counter
+### Prerequisites
 
-1. Navigate to the Counters tab
-2. Tap the `+` button
-3. Enter a name for your counter
-4. Use the buttons to:
-   - `+` Increment the counter
-   - `-` Decrement (only if > 0)
-   - Rotate reset the counter
-   - Delete remove the counter
+- [Node.js 20+](https://nodejs.org/)
+- [Expo CLI](https://docs.expo.dev/)
+- For Android: [Java JDK 17](https://adoptium.net/)
+- For iOS: [Xcode 15+](https://developer.apple.com/xcode/) (macOS only)
 
-### Pitching Session
+### Run
 
-1. Tap the **PITCH** button for each pitch
-2. Use **BALL**, **STRIKE**, **WALK**, **HITTER** as needed
-3. View live stats at the top
+```bash
+cd react-native
+npm ci
+npm start
+
+# Press 'w' for web, 'a' for Android emulator, 'i' for iOS simulator
+```
+
+### Build
+
+```bash
+# Web
+npx expo export --platform web
+
+# Android
+npx expo export --platform android
+```
 
 ## Project Structure
 
 ```
-lib/
-├── app/           # App entry point
-├── config/        # Config/labels
-├── models/        # PitchGame, PitchSession, CounterManager
-├── pages/         # PitchCounter, ArbitraryCounters
-└── services/      # Persistence service
+├── lib/                       # Flutter source
+│   ├── app/                   #   App root & navigation
+│   ├── config/                #   Labels/constants
+│   ├── models/                #   PitchGame, CounterManager
+│   └── pages/                 #   Game, Counter Mode, Counters, Settings
+├── react-native/              # React Native (Expo) source
+│   ├── app/(tabs)/            #   Screens (index, counter-mode, counters, settings)
+│   ├── components/ui/         #   Reusable components
+│   ├── hooks/                 #   Zustand stores (use-pitch-game, use-counter-manager)
+│   └── constants/             #   Theme colors, spacing, typography
 ```
-
-## Improvements in Progress
-
-- ✅ Counter validation & duplicate detection
-- ✅ State persistence with shared_preferences
-- ✅ Usage statistics tracking
-- ✅ CodeQL security scanning
-- ✅ CI linting with flutter analyze
-- ✅ Widget tests for counter model
-- ⏳ Game state persistence (optional)
 
 ## License
 
 MIT License
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## Related Projects
-
-- [Flutter](https://flutter.dev)
-- [Provider](https://pub.dev/packages/provider)
-- [Shared Preferences](https://pub.dev/packages/shared_preferences)

@@ -1,5 +1,20 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, Alert, Modal, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
+
+function showAlert(title: string, message: string, buttons?: { text: string; style?: string; onPress?: () => void }[]) {
+  if (Platform.OS === 'web') {
+    const destructive = buttons?.find(b => b.style === 'destructive');
+    if (destructive) {
+      if (window.confirm(`${title}\n\n${message}`)) {
+        destructive.onPress?.();
+      }
+    } else {
+      window.alert(`${title}\n\n${message}`);
+    }
+  } else {
+    Alert.alert(title, message, buttons as any);
+  }
+}
 import { useColorScheme } from 'react-native';
 import { useCounterManager } from '@/hooks/use-counter-manager';
 import { Colors } from '@/constants/theme';
@@ -30,12 +45,12 @@ export default function CountersScreen() {
       setCounterName('');
       setShowAddModal(false);
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to add counter');
+      showAlert('Error', error.message || 'Failed to add counter');
     }
   };
 
   const handleDeleteCounter = (id: string, name: string) => {
-    Alert.alert(
+    showAlert(
       'Remove Counter',
       `${name} will be deleted permanently.`,
       [
@@ -75,17 +90,17 @@ export default function CountersScreen() {
         <View
           style={{
             padding: 16,
-            backgroundColor: '#e3f2fd',
+            backgroundColor: accentColor.primaryLight,
             borderBottomLeftRadius: 16,
             borderBottomRightRadius: 16,
           }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text style={{ fontSize: 28, marginRight: 12 }}>📈</Text>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 12, color: 'rgba(0,0,0,0.54)' }}>
+              <Text style={{ fontSize: 12, color: textColor.secondary }}>
                 Most Used Counter
               </Text>
-              <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'rgba(0,0,0,0.87)', marginTop: 4 }}>
+              <Text style={{ fontSize: 20, fontWeight: 'bold', color: textColor.primary, marginTop: 4 }}>
                 {topCounter.name}
               </Text>
             </View>

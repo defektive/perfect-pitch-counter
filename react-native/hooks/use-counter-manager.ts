@@ -6,7 +6,7 @@ export interface ArbitraryCounter {
   name: string;
   count: number;
   totalIncrements: number;
-  lastUsed?: Date;
+  lastUsed?: string;
   hasBeenUsed: boolean;
 }
 
@@ -31,14 +31,7 @@ export const useCounterManager = create<CounterManagerState>((set, get) => ({
       const stored = await AsyncStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored) as ArbitraryCounter[];
-        set({
-          counters: parsed.map((c) => ({
-            ...c,
-            lastUsed: c.lastUsed
-              ? new Date(c.lastUsed)
-              : undefined,
-          })),
-        });
+        set({ counters: parsed });
       }
     } catch (error) {
       console.error('Failed to load counters:', error);
@@ -78,7 +71,7 @@ export const useCounterManager = create<CounterManagerState>((set, get) => ({
         ...counter,
         count: counter.count + 1,
         totalIncrements: counter.totalIncrements + 1,
-        lastUsed: new Date(),
+        lastUsed: new Date().toISOString(),
         hasBeenUsed: true,
       };
 
@@ -86,6 +79,7 @@ export const useCounterManager = create<CounterManagerState>((set, get) => ({
         counters: state.counters.map((c) => (c.id === id ? updatedCounter : c)),
       };
     });
+    _saveCounters();
   },
 
   decrementCounter(id: string) {
@@ -97,7 +91,7 @@ export const useCounterManager = create<CounterManagerState>((set, get) => ({
         const updatedCounter = {
           ...counter,
           count: counter.count - 1,
-          lastUsed: new Date(),
+          lastUsed: new Date().toISOString(),
         };
         return {
           counters: state.counters.map((c) => (c.id === id ? updatedCounter : c)),
@@ -105,6 +99,7 @@ export const useCounterManager = create<CounterManagerState>((set, get) => ({
       }
       return state;
     });
+    _saveCounters();
   },
 
   resetCounter(id: string) {
@@ -113,18 +108,19 @@ export const useCounterManager = create<CounterManagerState>((set, get) => ({
         c.id === id ? { ...c, count: 0, hasBeenUsed: false } : c
       ),
     }));
+    _saveCounters();
   },
 
   async removeCounter(id: string) {
-    await _saveCounters();
     set((state) => ({
       counters: state.counters.filter((c) => c.id !== id),
     }));
+    await _saveCounters();
   },
 
   async resetAll() {
-    await _saveCounters();
     set({ counters: [] });
+    await _saveCounters();
   },
 }));
 

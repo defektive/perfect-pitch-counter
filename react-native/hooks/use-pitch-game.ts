@@ -17,17 +17,11 @@ interface PitchGameState {
   ballPercentage: number;
   // Timer
   isTimerRunning: boolean;
-  gameStarted?: Date;
-  lastTime?: Date;
-  // Persistence
-  persistenceKey: string;
+  gameStarted?: string;
+  lastTime?: string;
+  // Actions
   loadGame: () => Promise<void>;
   resetGame: () => Promise<void>;
-  // Pitch type counts
-  fbCount: number;
-  cuCount: number;
-  sfCount: number;
-  // Actions
   incrementStrike: () => void;
   incrementBall: () => void;
   incrementHit: () => void;
@@ -35,12 +29,19 @@ interface PitchGameState {
   incrementOut: () => void;
   resetCounters: () => void;
   toggleTimer: () => void;
-  getDuration: () => Date | undefined;
   exportToJson: () => string;
   exportToCsv: () => string;
 }
 
 const GAME_STORAGE_KEY = '@pitch-game';
+
+function calcPercentages(totalStrikes: number, totalBalls: number, hitCount: number) {
+  const totalPitches = totalStrikes + totalBalls + hitCount;
+  return {
+    strikePercentage: totalPitches > 0 ? Math.round((totalStrikes / totalPitches) * 100) : 0,
+    ballPercentage: totalPitches > 0 ? Math.round((totalBalls / totalPitches) * 100) : 0,
+  };
+}
 
 export const usePitchGame = create<PitchGameState>((set, get) => ({
   outCount: 0,
@@ -53,18 +54,28 @@ export const usePitchGame = create<PitchGameState>((set, get) => ({
   currentStrikes: 0,
   strikePercentage: 0,
   ballPercentage: 0,
-  fbCount: 0,
-  cuCount: 0,
-  sfCount: 0,
   isTimerRunning: false,
-  persistenceKey: GAME_STORAGE_KEY,
 
   async loadGame() {
     try {
       const stored = await AsyncStorage.getItem(GAME_STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        set(parsed as PitchGameState);
+        set({
+          outCount: parsed.outCount ?? 0,
+          walkCount: parsed.walkCount ?? 0,
+          hitCount: parsed.hitCount ?? 0,
+          totalBalls: parsed.totalBalls ?? 0,
+          totalStrikes: parsed.totalStrikes ?? 0,
+          totalPitches: parsed.totalPitches ?? 0,
+          currentBalls: parsed.currentBalls ?? 0,
+          currentStrikes: parsed.currentStrikes ?? 0,
+          strikePercentage: parsed.strikePercentage ?? 0,
+          ballPercentage: parsed.ballPercentage ?? 0,
+          isTimerRunning: parsed.isTimerRunning ?? false,
+          gameStarted: parsed.gameStarted ?? undefined,
+          lastTime: parsed.lastTime ?? undefined,
+        });
       }
     } catch (error) {
       console.error('Failed to load game:', error);
@@ -72,7 +83,7 @@ export const usePitchGame = create<PitchGameState>((set, get) => ({
   },
 
   async resetGame() {
-    await _saveGameState({
+    const resetState = {
       outCount: 0,
       walkCount: 0,
       hitCount: 0,
@@ -86,7 +97,9 @@ export const usePitchGame = create<PitchGameState>((set, get) => ({
       isTimerRunning: false,
       gameStarted: undefined,
       lastTime: undefined,
-    });
+    };
+    set(resetState);
+    await _saveGameState(resetState);
   },
 
   incrementStrike() {
@@ -95,27 +108,28 @@ export const usePitchGame = create<PitchGameState>((set, get) => ({
     const newTotalStrikes = state.totalStrikes + 1;
     const newTotalPitches = state.totalPitches + 1;
 
-    // 3 strikes = 1 out, reset current count for next batter
     let newCurrentBalls = state.currentBalls;
     let newCurrentStrikesAfterOut = newCurrentStrikes;
-    let newOutCount = newCurrentStrikes >= 3 ? state.outCount + 1 : state.outCount;
+    let newOutCount = state.outCount;
 
     if (newCurrentStrikes >= 3) {
-      // Batter is out, reset current count for next batter
+      newOutCount = state.outCount + 1;
       newCurrentBalls = 0;
       newCurrentStrikesAfterOut = 0;
     }
 
-    const newStrikePercentage = newTotalPitches > 0 ? Math.round((newTotalStrikes / newTotalPitches) * 100) : 0;
+    const pcts = calcPercentages(newTotalStrikes, state.totalBalls, state.hitCount);
 
-    set({
+    const update = {
       outCount: newOutCount,
       currentBalls: newCurrentBalls,
       currentStrikes: newCurrentStrikesAfterOut,
       totalStrikes: newTotalStrikes,
       totalPitches: newTotalPitches,
-      strikePercentage: newStrikePercentage,
-    });
+      ...pcts,
+    };
+    set(update);
+    _saveCurrentState();
   },
 
   incrementBall() {
@@ -124,79 +138,74 @@ export const usePitchGame = create<PitchGameState>((set, get) => ({
     const newTotalBalls = state.totalBalls + 1;
     const newTotalPitches = state.totalPitches + 1;
 
-    // 4 balls = 1 walk, reset current count for next batter
     let newWalkCount = state.walkCount;
     let newCurrentBallsAfterWalk = newCurrentBalls;
+    let newCurrentStrikes = state.currentStrikes;
 
     if (newCurrentBalls >= 4) {
-      // Batter walks, reset current count for next batter
       newWalkCount = state.walkCount + 1;
       newCurrentBallsAfterWalk = 0;
+      newCurrentStrikes = 0;
     }
 
-    const newBallPercentage = newTotalPitches > 0 ? Math.round((newTotalBalls / newTotalPitches) * 100) : 0;
+    const pcts = calcPercentages(state.totalStrikes, newTotalBalls, state.hitCount);
 
-    set({
+    const update = {
       walkCount: newWalkCount,
       currentBalls: newCurrentBallsAfterWalk,
+      currentStrikes: newCurrentStrikes,
       totalBalls: newTotalBalls,
       totalPitches: newTotalPitches,
-      ballPercentage: newBallPercentage,
-    });
+      ...pcts,
+    };
+    set(update);
+    _saveCurrentState();
   },
 
   incrementHit() {
     const state = get();
+    const newHitCount = state.hitCount + 1;
+    const newTotalPitches = state.totalPitches + 1;
+    const pcts = calcPercentages(state.totalStrikes, state.totalBalls, newHitCount);
 
-    // On a hit, reset current count for next batter
-    set({
-      hitCount: state.hitCount + 1,
+    const update = {
+      hitCount: newHitCount,
       currentBalls: 0,
       currentStrikes: 0,
-      totalPitches: state.totalPitches + 1,
-      totalStrikes: state.totalStrikes,
-      totalBalls: state.totalBalls,
-    });
+      totalPitches: newTotalPitches,
+      ...pcts,
+    };
+    set(update);
+    _saveCurrentState();
   },
 
   incrementWalk() {
-    // Walk is same as ball, but we still count it
     const state = get();
-    const newCurrentBalls = state.currentBalls + 1;
-    const newTotalBalls = state.totalBalls + 1;
-    const newTotalPitches = state.totalPitches + 1;
-
     const newWalkCount = state.walkCount + 1;
 
-    const newBallPercentage = newTotalPitches > 0 ? Math.round((newTotalBalls / newTotalPitches) * 100) : 0;
-
-    // Check if this walk resulted in a walk
-    let newCurrentBallsAfterWalk = newCurrentBalls;
-    if (newCurrentBalls >= 4) {
-      newCurrentBallsAfterWalk = 0;
-    }
-
-    set({
+    const update = {
       walkCount: newWalkCount,
-      currentBalls: newCurrentBallsAfterWalk,
-      totalBalls: newTotalBalls,
-      totalPitches: newTotalPitches,
-      ballPercentage: newBallPercentage,
-    });
+      currentBalls: 0,
+      currentStrikes: 0,
+    };
+    set(update);
+    _saveCurrentState();
   },
 
   incrementOut() {
     const state = get();
 
-    set({
+    const update = {
       outCount: state.outCount + 1,
       currentBalls: 0,
       currentStrikes: 0,
-    });
+    };
+    set(update);
+    _saveCurrentState();
   },
 
   resetCounters() {
-    set({
+    const resetState = {
       outCount: 0,
       walkCount: 0,
       hitCount: 0,
@@ -207,49 +216,29 @@ export const usePitchGame = create<PitchGameState>((set, get) => ({
       currentStrikes: 0,
       strikePercentage: 0,
       ballPercentage: 0,
-      fbCount: 0,
-      cuCount: 0,
-      sfCount: 0,
       isTimerRunning: false,
       gameStarted: undefined,
       lastTime: undefined,
-    });
+    };
+    set(resetState);
+    _saveGameState(resetState);
   },
 
   toggleTimer() {
     const state = get();
 
     if (state.isTimerRunning) {
-      set({ isTimerRunning: false });
+      set({ isTimerRunning: false, lastTime: new Date().toISOString() });
     } else {
-      set({ isTimerRunning: true, gameStarted: new Date() });
+      set({ isTimerRunning: true, gameStarted: new Date().toISOString() });
     }
-  },
-
-  getDuration() {
-    const state = get();
-    if (state.isTimerRunning && state.gameStarted) {
-      return new Date();
-    }
-    return state.lastTime;
-  },
-
-  getFbCount() {
-    return get().fbCount;
-  },
-
-  getCuCount() {
-    return get().cuCount;
-  },
-
-  getSfCount() {
-    return get().sfCount;
+    _saveCurrentState();
   },
 
   exportToJson() {
     const state = get();
     return JSON.stringify({
-      timestamp: state.gameStarted ? state.gameStarted.toISOString() : new Date().toISOString(),
+      timestamp: state.gameStarted ?? new Date().toISOString(),
       ballCount: state.totalBalls,
       strikeCount: state.totalStrikes,
       hitCount: state.hitCount,
@@ -263,12 +252,15 @@ export const usePitchGame = create<PitchGameState>((set, get) => ({
 
   exportToCsv() {
     const state = get();
-    const timestamp = state.gameStarted
-      ? state.gameStarted.toISOString()
-      : new Date().toISOString();
+    const timestamp = state.gameStarted ?? new Date().toISOString();
     return `Timestamp,Ball Count,Strike Count,Hit Count,Walk Count,Out Count,Pitch Count,Strike %,Ball %\n${timestamp},${state.totalBalls},${state.totalStrikes},${state.hitCount},${state.walkCount},${state.outCount},${state.totalPitches},${state.strikePercentage},${state.ballPercentage}`;
   },
 }));
+
+function _saveCurrentState() {
+  const state = usePitchGame.getState();
+  _saveGameState(state);
+}
 
 async function _saveGameState(state: Partial<PitchGameState>) {
   const storedState = {
@@ -283,8 +275,8 @@ async function _saveGameState(state: Partial<PitchGameState>) {
     strikePercentage: state.strikePercentage,
     ballPercentage: state.ballPercentage,
     isTimerRunning: state.isTimerRunning,
-    gameStarted: state.gameStarted?.toISOString(),
-    lastTime: state.lastTime?.toISOString(),
+    gameStarted: state.gameStarted,
+    lastTime: state.lastTime,
   };
   try {
     await AsyncStorage.setItem(GAME_STORAGE_KEY, JSON.stringify(storedState));
