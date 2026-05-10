@@ -42,10 +42,14 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
+    "@testing-library/react-native": "^13.3.3",
     "@types/react": "~19.1.0",
-    "typescript": "~5.8.3",
+    "@vitest/coverage-istanbul": "^3.1.1",
+    "@vitest/coverage-v8": "^3.1.1",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
+    "react-test-renderer": "^19.1.0",
+    "typescript": "~5.8.3",
     "vite": "^6.2.4",
     "vitest": "^3.1.1"
   },

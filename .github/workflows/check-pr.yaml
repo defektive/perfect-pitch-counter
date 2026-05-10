@@ -65,6 +65,10 @@ jobs:
         working-directory: react-native
         run: npm ci
 
+      - name: Run React Native Tests
+        working-directory: react-native
+        run: npm test -- --run
+
       - name: Generate Android Project
         working-directory: react-native
         run: npx expo prebuild --platform android --clean
