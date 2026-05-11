@@ -9,7 +9,7 @@ import type { ExpoConfig } from 'expo/config';
  *   APP_VERSION_NAME — user-visible version string (defaults to "1.0.0")
  *   APP_VERSION_CODE — monotonically increasing integer (defaults to 1)
  */
-const versionName = process.env.APP_VERSION_NAME ?? '1.0.0';
+const versionName = process.env.APP_VERSION_NAME ?? '0.2.0';
 const versionCode = Number.parseInt(process.env.APP_VERSION_CODE ?? '1', 10);
 
 const config: ExpoConfig = {
