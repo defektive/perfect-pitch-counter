@@ -7,30 +7,32 @@ on:
 
 jobs:
   build_and_deploy:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 20
+          cache: npm
 
       - name: Install dependencies
-        run: |
-          cd react-native
-          npm ci
+        run: npm ci
 
       - name: Build Web
-        run: |
-          cd react-native
-          npx expo export --platform web
+        run: npx expo export --platform web
+
+      - name: SPA deep-link fallback
+        run: cp dist/index.html dist/404.html
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e
+        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./react-native/dist
+          publish_dir: ./dist
           publish_branch: gh-pages

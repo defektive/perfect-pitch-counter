@@ -4,44 +4,9 @@ permissions:
 
 on:
   pull_request:
-    branches: [main] # Triggers only for PRs targeting the 'main' branch
-
+    branches: [main]
 
 jobs:
-  run_tests:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: Set Up JDK
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
-        with:
-          java-version: 17
-          distribution: oracle
-
-      - name: Set Up Flutter
-        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
-        with:
-          channel: 'stable'
-
-      - name: Install Dependencies
-        run: |
-          flutter clean
-          flutter pub get
-
-      - name: Run Tests
-        run: |
-          flutter test
-
-      - name: Analyze Lints
-        run: |
-          flutter analyze
-
-      - name: Build Flutter Debug APK
-        run: |
-          flutter build apk --debug
-
   build_react_native_android:
     runs-on: ubuntu-latest
     steps:
@@ -59,26 +24,20 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: react-native/package-lock.json
 
       - name: Install Dependencies
-        working-directory: react-native
         run: npm ci
 
       - name: Run React Native Tests
-        working-directory: react-native
         run: npm test -- --run
 
       - name: Generate Android Project
-        working-directory: react-native
         run: npx expo prebuild --platform android --clean
 
       - name: Remove unsupported enableBundleCompression
-        working-directory: react-native
         run: sed -i '/enableBundleCompression/d' android/app/build.gradle
 
       - name: Build React Native Debug APK
-        working-directory: react-native
         run: |
           cd android
           ./gradlew assembleDebug
