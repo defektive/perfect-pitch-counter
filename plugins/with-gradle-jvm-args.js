@@ -1,25 +1,37 @@
 /**
- * Config plugin: persist Gradle JVM args across `expo prebuild --clean`.
+ * Config plugin: persist gradle.properties overrides across `expo prebuild --clean`.
  *
- * Lint analysis on RN 0.79's release build runs out of metaspace with the
- * default 512MB allocation. We bump heap and metaspace here so the bump
- * survives prebuild instead of having to be re-applied to gradle.properties
- * after every regeneration.
+ *   org.gradle.jvmargs                            — bumped so lintVitalAnalyzeRelease
+ *                                                    doesn't OOM on metaspace.
+ *   reactNativeArchitectures                      — drops x86 + x86_64 (emulator-only)
+ *                                                    to roughly halve the AAB size.
+ *   android.enableProguardInReleaseBuilds         — code minification on release.
+ *   android.enableShrinkResourcesInReleaseBuilds  — drops unreferenced resources.
+ *   expo.gif.enabled / expo.webp.enabled          — the app doesn't display GIFs or
+ *                                                    WebP, so drop their native Fresco
+ *                                                    decoder libs.
  */
 const { withGradleProperties } = require('@expo/config-plugins');
 
-const JVM_ARGS = '-Xmx4096m -XX:MaxMetaspaceSize=1536m';
+const OVERRIDES = {
+  'org.gradle.jvmargs': '-Xmx4096m -XX:MaxMetaspaceSize=1536m',
+  reactNativeArchitectures: 'armeabi-v7a,arm64-v8a',
+  'android.enableProguardInReleaseBuilds': 'true',
+  'android.enableShrinkResourcesInReleaseBuilds': 'true',
+  'expo.gif.enabled': 'false',
+  'expo.webp.enabled': 'false',
+};
 
 module.exports = function withGradleJvmArgs(config) {
   return withGradleProperties(config, (cfg) => {
     const items = cfg.modResults;
-    const idx = items.findIndex(
-      (i) => i.type === 'property' && i.key === 'org.gradle.jvmargs'
-    );
-    if (idx >= 0) {
-      items[idx].value = JVM_ARGS;
-    } else {
-      items.push({ type: 'property', key: 'org.gradle.jvmargs', value: JVM_ARGS });
+    for (const [key, value] of Object.entries(OVERRIDES)) {
+      const idx = items.findIndex((i) => i.type === 'property' && i.key === key);
+      if (idx >= 0) {
+        items[idx].value = value;
+      } else {
+        items.push({ type: 'property', key, value });
+      }
     }
     return cfg;
   });

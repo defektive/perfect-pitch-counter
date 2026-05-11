@@ -40,12 +40,11 @@ const config: ExpoConfig = {
     edgeToEdgeEnabled: true,
     package: 'dev.defektive.pitchin',
     versionCode,
-    permissions: [
-      'CAMERA',
-      'RECORD_AUDIO',
-      'READ_EXTERNAL_STORAGE',
-      'WRITE_EXTERNAL_STORAGE',
-    ],
+    // No permissions — the app doesn't access camera, microphone, or external
+    // storage. Declaring permissions you don't use silently adds implicit
+    // <uses-feature required="true"> entries, which excludes devices that
+    // lack that hardware (e.g. tablets without cameras).
+    permissions: [],
   },
   web: {
     output: 'static',
