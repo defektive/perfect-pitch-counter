@@ -2,7 +2,8 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { Platform, StatusBar as RNStatusBar } from 'react-native';
+import { Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -16,6 +17,7 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     usePitchGame.getState().loadGame();
@@ -31,8 +33,10 @@ export default function RootLayout() {
           options={{
             title: 'Perfect Pitch Counter',
             headerShown: true,
-            headerStatusBarHeight:
-              Platform.OS === 'android' ? RNStatusBar.currentHeight ?? 24 : undefined,
+            // Android 15+ forces edge-to-edge; without an explicit inset the
+            // Stack header sits at y=0 underneath the status bar. iOS already
+            // handles this via its own safe-area logic, so only override there.
+            headerStatusBarHeight: Platform.OS === 'android' ? insets.top : undefined,
           }}
         />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
