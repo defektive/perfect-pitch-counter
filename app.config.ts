@@ -32,6 +32,12 @@ const config: ExpoConfig = {
       monochromeImage: './assets/images/android-icon-monochrome.png',
       backgroundColor: '#bef800',
     },
+    // Android 15+ (targetSdkVersion 35) forces edge-to-edge at the system
+    // level. Opting in here is what hooks up react-native-edge-to-edge,
+    // which feeds correct top insets into useSafeAreaInsets() so the Stack
+    // header in app/_layout.tsx clears the status bar in release builds.
+    // Expo Go's own shell masks the misconfiguration locally.
+    edgeToEdgeEnabled: true,
     package: 'dev.defektive.pitchin',
     versionCode,
     permissions: [
