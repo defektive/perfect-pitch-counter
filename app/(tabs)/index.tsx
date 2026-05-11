@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import { useColorScheme } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { usePitchGame } from '@/hooks/use-pitch-game';
 import { useSessionHistory } from '@/hooks/use-session-history';
 import { Colors } from '@/constants/theme';
