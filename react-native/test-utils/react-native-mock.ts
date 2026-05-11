@@ -84,6 +84,12 @@ export const Alert = {
   alert: () => {},
 };
 
+export const Share = {
+  share: async (_content: { message?: string; title?: string; url?: string }) => ({
+    action: 'sharedAction',
+  }),
+};
+
 export const PixelRatio = {
   get: () => 2,
   getFontScale: () => 1,

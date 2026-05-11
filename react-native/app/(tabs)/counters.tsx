@@ -272,12 +272,16 @@ export default function CountersScreen() {
 
             <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 20 }}>
               <TouchableOpacity
+                accessibilityRole="button"
+                accessibilityLabel="Cancel adding counter"
                 style={{ paddingVertical: 10, paddingHorizontal: 16, marginRight: 8 }}
                 onPress={() => { setShowAddModal(false); setCounterName(''); }}
               >
                 <Text style={{ color: accentColor.primary, fontSize: 14, fontWeight: '600' }}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
+                accessibilityRole="button"
+                accessibilityLabel="Confirm add counter"
                 style={{
                   paddingVertical: 10,
                   paddingHorizontal: 20,

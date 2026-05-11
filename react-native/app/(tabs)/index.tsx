@@ -3,8 +3,10 @@ import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useColorScheme } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { usePitchGame } from '@/hooks/use-pitch-game';
+import { useSessionHistory } from '@/hooks/use-session-history';
 import { Colors } from '@/constants/theme';
 import { tapHaptic, actionHaptic, warningHaptic } from '@/utils/haptics';
+import { gameToSessionInput } from '@/utils/game-to-session';
 
 function formatDuration(ms: number): string {
   const totalSeconds = Math.floor(ms / 1000);
@@ -263,9 +265,14 @@ export default function PitchGameScreen() {
           <Text style={{ fontSize: 13, color: textColor.secondary }}>Reset stats</Text>
         </View>
         <TouchableOpacity
-          onPress={() => { warningHaptic(); resetCounters(); }}
+          onPress={() => {
+            warningHaptic();
+            const input = gameToSessionInput(usePitchGame.getState(), new Date());
+            if (input) useSessionHistory.getState().addSession(input);
+            resetCounters();
+          }}
           accessibilityRole="button"
-          accessibilityLabel="Reset all stats"
+          accessibilityLabel="Reset all stats and save to history"
           style={{
             paddingHorizontal: 24,
             paddingVertical: 12,

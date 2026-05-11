@@ -8,6 +8,7 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { usePitchGame } from '@/hooks/use-pitch-game';
 import { useCounterManager } from '@/hooks/use-counter-manager';
+import { useSessionHistory } from '@/hooks/use-session-history';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -19,6 +20,7 @@ export default function RootLayout() {
   useEffect(() => {
     usePitchGame.getState().loadGame();
     useCounterManager.getState().loadCounters();
+    useSessionHistory.getState().loadSessions();
   }, []);
 
   return (

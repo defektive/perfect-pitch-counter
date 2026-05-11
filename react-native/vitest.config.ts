@@ -27,11 +27,14 @@ export default defineConfig({
     coverage: {
       provider: 'istanbul',
       include: [
+        'app/**/*.ts',
+        'app/**/*.tsx',
         'hooks/**/*.ts',
         'hooks/**/*.tsx',
         'components/**/*.ts',
         'components/**/*.tsx',
         'constants/**/*.ts',
+        'utils/**/*.ts',
       ],
       exclude: [
         '**/__tests__/**',
