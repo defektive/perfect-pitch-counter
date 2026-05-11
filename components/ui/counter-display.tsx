@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
-import { useColorScheme } from 'react-native';
 import { Typography, Spacing } from '@/constants/theme';
 
 interface CounterDisplayProps {

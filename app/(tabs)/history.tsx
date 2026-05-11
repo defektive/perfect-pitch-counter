@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, Platform } from 'react-native';
-import { useColorScheme } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useSessionHistory, type SessionRecord } from '@/hooks/use-session-history';
 import { Colors } from '@/constants/theme';
 import { warningHaptic, tapHaptic } from '@/utils/haptics';

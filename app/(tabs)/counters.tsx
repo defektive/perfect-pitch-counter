@@ -17,7 +17,7 @@ function showAlert(title: string, message: string, buttons?: { text: string; sty
     Alert.alert(title, message, buttons as any);
   }
 }
-import { useColorScheme } from 'react-native';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useCounterManager } from '@/hooks/use-counter-manager';
 import { Colors } from '@/constants/theme';
 

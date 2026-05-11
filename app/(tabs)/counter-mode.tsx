@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Modal, Platform, Share } from 'react-native';
-import { useColorScheme } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { usePitchGame } from '@/hooks/use-pitch-game';
 import { Colors } from '@/constants/theme';
 import { tapHaptic, actionHaptic } from '@/utils/haptics';

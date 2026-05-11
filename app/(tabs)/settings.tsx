@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView, Platform } from 'react-native';
-import { useColorScheme } from 'react-native';
 import Constants from 'expo-constants';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Colors } from '@/constants/theme';
 
 function Divider({ color }: { color: string }) {
