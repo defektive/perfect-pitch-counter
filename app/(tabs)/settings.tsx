@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, Platform } from 'react-native';
 import { useColorScheme } from 'react-native';
 import Constants from 'expo-constants';
 import { Colors } from '@/constants/theme';
@@ -17,7 +17,10 @@ export default function SettingsScreen() {
 
   const appName = Constants.expoConfig?.name ?? 'Pitch Counter';
   const version = Constants.expoConfig?.version ?? '0.1.5';
-  const buildNumber = Constants.expoConfig?.ios?.buildNumber ?? Constants.expoConfig?.android?.versionCode?.toString() ?? '8';
+  const buildNumber =
+    Platform.OS === 'ios'
+      ? Constants.expoConfig?.ios?.buildNumber ?? '—'
+      : Constants.expoConfig?.android?.versionCode?.toString() ?? '—';
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor }}>
