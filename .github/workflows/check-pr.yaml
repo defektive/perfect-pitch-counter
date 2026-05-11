@@ -4,11 +4,10 @@ permissions:
 
 on:
   pull_request:
-    branches: [main] # Triggers only for PRs targeting the 'main' branch
-
+    branches: [main]
 
 jobs:
-  run_tests:
+  build_react_native_android:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -18,26 +17,27 @@ jobs:
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           java-version: 17
-          distribution: oracle
+          distribution: temurin
 
-      - name: Set Up Flutter
-        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - name: Set Up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          channel: 'stable'
+          node-version: 20
+          cache: npm
 
       - name: Install Dependencies
-        run: |
-          flutter clean
-          flutter pub get
+        run: npm ci
 
-      - name: Run Tests
-        run: |
-          flutter test
+      - name: Run React Native Tests
+        run: npm test -- --run
 
-      - name: Analyze Lints
-        run: |
-          flutter analyze
+      - name: Generate Android Project
+        run: npx expo prebuild --platform android --clean
 
-      - name: Build Debug APK (no signing keys required)
+      - name: Remove unsupported enableBundleCompression
+        run: sed -i '/enableBundleCompression/d' android/app/build.gradle
+
+      - name: Build React Native Debug APK
         run: |
-          flutter build apk --debug
+          cd android
+          ./gradlew assembleDebug
