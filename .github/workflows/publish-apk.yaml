@@ -10,6 +10,11 @@ jobs:
     permissions:
       contents: read
     runs-on: ubuntu-latest
+    env:
+      # Picked up by app.config.ts and baked into both the native project
+      # (via `expo prebuild`) and the JS bundle (via Constants.expoConfig).
+      APP_VERSION_CODE: ${{ github.run_number }}
+      APP_VERSION_NAME: ${{ github.ref_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
