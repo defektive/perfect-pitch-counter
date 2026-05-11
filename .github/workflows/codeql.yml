@@ -1,16 +1,27 @@
-name: CodeQL Secret Scanning
-permissions:
-  contents: read
+name: CodeQL
 
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
   schedule:
     - cron: '0 0 * * *' # Daily at midnight
 
 jobs:
-  lint_secrets:
+  analyze:
+    name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript-typescript, actions]
+
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -18,11 +29,16 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@7fd177fa680c9881b53cdab4d346d32574c9f7f4 # v3.35.4
         with:
+          languages: ${{ matrix.language }}
+          queries: security-extended
           config: |
             paths-ignore:
-              - .github
-              - vendor
-            queries: security-and-policy
+              - node_modules
+              - dist
+              - coverage
+              - android
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@7fd177fa680c9881b53cdab4d346d32574c9f7f4 # v3.35.4
+        with:
+          category: /language:${{ matrix.language }}
