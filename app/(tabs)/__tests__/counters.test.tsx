@@ -22,7 +22,7 @@ import { Alert } from 'react-native';
 import CountersScreen from '../counters';
 import { useCounterManager } from '@/hooks/use-counter-manager';
 
-type AlertButton = { text: string; style?: string; onPress?: () => void };
+type AlertButton = { text?: string; style?: string; onPress?: () => void };
 
 function autoConfirmDelete() {
   return vi.spyOn(Alert, 'alert').mockImplementation((_t: unknown, _m: unknown, buttons?: AlertButton[]) => {

@@ -107,22 +107,25 @@ export default function PitchGameScreen() {
   const [elapsed, setElapsed] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  useEffect(() => {
-    if (isTimerRunning && gameStarted) {
-      const start = new Date(gameStarted).getTime();
-      const tick = () => setElapsed(Date.now() - start);
-      tick();
-      intervalRef.current = setInterval(tick, 1000);
-      return () => {
-        if (intervalRef.current) clearInterval(intervalRef.current);
-      };
-    } else {
-      setElapsed(0);
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    }
-  }, [isTimerRunning, gameStarted]);
+  const activeTimer = isTimerRunning && gameStarted;
 
-  const timerDisplay = isTimerRunning ? formatDuration(elapsed) : '00:00:00';
+  useEffect(() => {
+    if (!activeTimer) {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      return;
+    }
+    const start = new Date(gameStarted!).getTime();
+    const tick = () => setElapsed(Date.now() - start);
+    tick();
+    intervalRef.current = setInterval(tick, 1000);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [activeTimer, gameStarted]);
+
+  const timerElapsed = activeTimer ? elapsed : 0;
+
+  const timerDisplay = isTimerRunning ? formatDuration(timerElapsed) : '00:00:00';
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor }}>
