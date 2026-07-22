@@ -25,7 +25,7 @@ import {
   type SessionRecord,
 } from '@/hooks/use-session-history';
 
-type AlertButton = { text: string; style?: string; onPress?: () => void };
+type AlertButton = { text?: string; style?: string; onPress?: () => void };
 
 function autoConfirm() {
   return vi.spyOn(Alert, 'alert').mockImplementation((_t: unknown, _m: unknown, buttons?: AlertButton[]) => {
