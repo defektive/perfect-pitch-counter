@@ -6,7 +6,6 @@
  *   reactNativeArchitectures                      — drops x86 + x86_64 (emulator-only)
  *                                                    to roughly halve the AAB size.
  *   android.enableProguardInReleaseBuilds         — code minification on release.
- *   android.enableShrinkResourcesInReleaseBuilds  — drops unreferenced resources.
  *   expo.gif.enabled / expo.webp.enabled          — the app doesn't display GIFs or
  *                                                    WebP, so drop their native Fresco
  *                                                    decoder libs.
@@ -17,7 +16,6 @@ const OVERRIDES = {
   'org.gradle.jvmargs': '-Xmx4096m -XX:MaxMetaspaceSize=1536m',
   reactNativeArchitectures: 'armeabi-v7a,arm64-v8a',
   'android.enableProguardInReleaseBuilds': 'true',
-  'android.enableShrinkResourcesInReleaseBuilds': 'true',
   'expo.gif.enabled': 'false',
   'expo.webp.enabled': 'false',
 };
